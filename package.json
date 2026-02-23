@@ -1,0 +1,13 @@
+{
+  "name": "bulla-registry",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "consolidate": "tsx scripts/consolidate.ts",
+    "pull": "bash scripts/pull-and-copy.sh",
+    "pull:local": "bash scripts/pull-and-copy.sh --local"
+  },
+  "dependencies": {
+    "tsx": "^4.7.0"
+  }
+}
