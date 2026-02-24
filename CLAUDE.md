@@ -17,47 +17,23 @@ registry.json                    # All addresses + GraphQL endpoints (generated)
 bulla-backend/                   # Backend API (private repo, manually maintained)
   skills/
     authenticate.md              # Authenticate a wallet address with the Bulla backend using Sign-In with Ethereum (SIWE).
-
-bulla-contracts/                 # V1 contracts
-  address_config.json
-  abis/                          # BullaBanker, BullaClaimERC721, BullaFinance, BullaInstantPayment, BullaManager
-  skills/
-    batch-create-claims.md       # Create multiple on-chain payment claims in a single transaction via the BatchCreate contract.
-    create-claim.md              # Create an on-chain payment claim (invoice or payment request) via the BullaBanker contract.
-    instant-payment.md           # Send an instant payment to a recipient with an on-chain record.
-    pay-claim.md                 # Pay an existing on-chain claim (V1).
-
-bulla-contracts-v2/              # V2 contracts
-  address_config.json
-  abis/                          # BullaApprovalRegistry, BullaClaimPermitLib, BullaClaimV2, BullaFrendLendV2, BullaInvoice
-  typechain/                     # TypeChain generated types
-  skills/
-    create-invoice.md            # Create an on-chain invoice using the BullaInvoice controller contract.
-    offer-frendlend.md           # Create a peer-to-peer loan offer using the BullaFrendLendV2 controller.
-    pay-invoice.md               # Pay an existing on-chain invoice.
-
-bulla-subgraph/                  # GraphQL subgraph
-  address_config.json
-  skills/
-    query-claim-by-id.md         # Query a specific claim by its token ID and version from the Bulla subgraph.
-    query-user-claims.md         # Query all claims (invoices and payments) associated with a wallet address via the Bulla subgraph.
 ```
 
 ## Networks
 
 | Chain ID | Name | V1 | V2 | Subgraph |
 |----------|------|----|----|----------|
-| 1 | Ethereum Mainnet | yes | yes | yes |
-| 10 | Optimism | yes | yes | yes |
-| 56 | BNB Chain | yes | yes | yes |
-| 100 | Gnosis Chain | yes | yes | yes |
-| 137 | Polygon | yes | yes | yes |
-| 151 | RedBelly | yes | no | yes |
-| 8453 | Base | yes | yes | yes |
-| 42161 | Arbitrum | yes | yes | yes |
-| 42220 | Celo | yes | yes | yes |
-| 43114 | Avalanche | yes | yes | yes |
-| 11155111 | Sepolia | yes | yes | yes |
+| 1 | Ethereum Mainnet | no | no | no |
+| 10 | Optimism | no | no | no |
+| 56 | BNB Chain | no | no | no |
+| 100 | Gnosis Chain | no | no | no |
+| 137 | Polygon | no | no | no |
+| 151 | RedBelly | no | no | no |
+| 8453 | Base | no | no | no |
+| 42161 | Arbitrum | no | no | no |
+| 42220 | Celo | no | no | no |
+| 43114 | Avalanche | no | no | no |
+| 11155111 | Sepolia | no | no | no |
 
 ## How to Use
 
