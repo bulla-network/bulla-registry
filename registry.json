@@ -1,0 +1,250 @@
+{
+  "generatedAt": "2026-02-23T17:02:58.199Z",
+  "networks": {
+    "1": {
+      "name": "Ethereum Mainnet",
+      "chainId": 1,
+      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-mainnet/v2-main/gn",
+      "contracts": {
+        "bulla-contracts": {
+          "bullaManager": "0x1b4DB52FD952F70d3D28bfbd406dB71940eD8cA9",
+          "bullaClaim": "0x127948A4286A67A0A5Cb56a2D0d54881077A4889",
+          "bullaBanker": "0x873C25e47f3C5e4bC524771DFed53B5B36ad5eA2",
+          "bullaFinance": "0x5369F71e1Fe238f0e6D938c734E2D2aE7296F362",
+          "frendLend": "0xbAB429068fc4A5455849f58C4Bf04F398e8006c1",
+          "batchCreate": "0x6811De39DC03245A15D54e2bc615821f9997bbC4",
+          "bullaInstantPayment": "0xec6013D62Af8dfB65B8248204Dd1913d2f1F0181"
+        },
+        "bulla-contracts-v2": {
+          "bullaClaimV2": "0x10a55a4dbd24fa188eed98a2adae2ebff0ef1219",
+          "bullaApprovalRegistry": "0x998d8d1ef0984fbd226eb61d97e291b2d3eb7bfb",
+          "bullaInvoice": "0xfe2631bcb3e622750b6fbb605a416173ffa3a770",
+          "bullaClaimPermitLib": "0x07e0b0d697419b050ba531df6db8671f14433998",
+          "frendLendV2": "0x1097b7ecf0721aaffff147cf7bec154422896317"
+        }
+      }
+    },
+    "10": {
+      "name": "Optimism",
+      "chainId": 10,
+      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-optimism/v2-main/gn",
+      "contracts": {
+        "bulla-contracts": {
+          "bullaManager": "0xE14E624b29BcDa2ec409BBBf97037fEDe3803797",
+          "bullaClaim": "0x0af8C15D19058892cDEA66C8C74B7D7bB696FaD5",
+          "bullaBanker": "0xce704a7Fae206ad009852258dDD8574B844eDa3b",
+          "bullaFinance": "0x5369F71e1Fe238f0e6D938c734E2D2aE7296F362",
+          "frendLend": "0x3702D060cbB102b6AebF40B40880F77BeF3d7225",
+          "batchCreate": "0x6985d6af038f177438a6681d1F64d4409Dc8AaC2",
+          "bullaInstantPayment": "0xbe25A1086DE2b587B2D20E4B14c442cdA2437945"
+        },
+        "bulla-contracts-v2": {
+          "bullaClaimV2": "0x54280b44f8725c89d57d224c4d5a2f8870549471",
+          "bullaApprovalRegistry": "0x4d5ea6f590a5bec220995f63b31fa9585dbed857",
+          "bullaInvoice": "0x12c0edd1de5578e02390209224f22fe1ca2d0d40",
+          "bullaClaimPermitLib": "0x07e0b0d697419b050ba531df6db8671f14433998",
+          "frendLendV2": "0x17eb35e2205820aa4ed30704226f2517507f433b"
+        }
+      }
+    },
+    "56": {
+      "name": "BNB Chain",
+      "chainId": 56,
+      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-bnb_chain/v2-main/gn",
+      "contracts": {
+        "bulla-contracts": {
+          "bullaManager": "0x15250D092a789e2304472eD581D587B714615d24",
+          "bullaClaim": "0xBAD5c53cC6b37d706E6153d397864E5fdbD38170",
+          "bullaBanker": "0x69E7e315a6fea4775e568337ca58F1395C0c01fc",
+          "bullaFinance": "0x3702D060cbB102b6AebF40B40880F77BeF3d7225",
+          "frendLend": "0x5369F71e1Fe238f0e6D938c734E2D2aE7296F362",
+          "batchCreate": "0x15C43c1483816C0DEfcb3154b09A9e450d139033",
+          "bullaInstantPayment": "0xa9a04d0C22B6f264BC72a108d124f25BD199c928"
+        },
+        "bulla-contracts-v2": {
+          "bullaClaimV2": "0xbe25a1086de2b587b2d20e4b14c442cda2437945",
+          "bullaApprovalRegistry": "0x6985d6af038f177438a6681d1f64d4409dc8aac2",
+          "bullaInvoice": "0xba80d22b532eb1a2326334f35565af551f9c8af7",
+          "bullaClaimPermitLib": "0x07e0b0d697419b050ba531df6db8671f14433998",
+          "frendLendV2": "0xf34aa523a1cf4d91a3cb1c53cb50acd6eed0b153"
+        }
+      }
+    },
+    "100": {
+      "name": "Gnosis Chain",
+      "chainId": 100,
+      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-gnosis/v2-main/gn",
+      "contracts": {
+        "bulla-contracts": {
+          "bullaManager": "0x7c70dC167ebC555d2F68c93699343636e2A92308",
+          "bullaClaim": "0xA19d5908e8F56fbf5013282837C4A73c3C5374DB",
+          "bullaBanker": "0x53A6762c7037e80ae2E9E5bC90287D5EA2FDAa09",
+          "bullaFinance": "0x69E7e315a6fea4775e568337ca58F1395C0c01fc",
+          "frendLend": "0x15C43c1483816C0DEfcb3154b09A9e450d139033",
+          "batchCreate": "0xe14e624b29bcda2ec409bbbf97037fede3803797",
+          "bullaInstantPayment": "0xA2d3332AdC23109129651A85388eB6561C69074A"
+        },
+        "bulla-contracts-v2": {
+          "bullaClaimV2": "0xf28c50eb5996508b558f0ffdde637c4385117430",
+          "bullaApprovalRegistry": "0xb358fb00a1403fe38099dba2946631f092ea21b4",
+          "bullaInvoice": "0xd60f8fc651bdcee2c6ed9914d610c0e22ce190d6",
+          "bullaClaimPermitLib": "0x07e0b0d697419b050ba531df6db8671f14433998",
+          "frendLendV2": "0x7c3e51e84705fed1832bd6aabb9edd3e4681374e"
+        }
+      }
+    },
+    "137": {
+      "name": "Polygon",
+      "chainId": 137,
+      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-polygon/v2-main/gn",
+      "contracts": {
+        "bulla-contracts": {
+          "bullaManager": "0x48D283521Ff91a1e83A16a7138B549C34BeDD44c",
+          "bullaClaim": "0x5A809C17d33c92f9EFF31e579E9DeDF247e1EBe4",
+          "bullaBanker": "0x85Acc8E44d732eFF1ddec75a1EE93D6e4A033eF8",
+          "bullaFinance": "0xF7d793dc425E64CA93Cf92bb6cfF6173bdbA3995",
+          "frendLend": "0x60b49BB18b60dE3A95235A4d5F42062dD1D461E2",
+          "batchCreate": "0xfbdf5dff946200B038e1455E532D9795F030aB91",
+          "bullaInstantPayment": "0x712359c61534c5da10821c09d0e9c7c2312e1d91"
+        },
+        "bulla-contracts-v2": {
+          "bullaClaimV2": "0x0313433613f24c73efc15c5c74408f40b462fd9e",
+          "bullaApprovalRegistry": "0xf446785eb5e7ebeafd89e7a0ec1fe4ec37686486",
+          "bullaInvoice": "0x7c2cc85cb30844b81524e703f04a5ee98e3313fb",
+          "bullaClaimPermitLib": "0x07e0b0d697419b050ba531df6db8671f14433998",
+          "frendLendV2": "0x8a6b12c9980249f4e52b1e2a31cdbc23d3354629"
+        }
+      }
+    },
+    "151": {
+      "name": "RedBelly",
+      "chainId": 151,
+      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-redbelly/v2-main/gn",
+      "contracts": {
+        "bulla-contracts": {
+          "bullaManager": "0xE14E624b29BcDa2ec409BBBf97037fEDe3803797",
+          "bullaClaim": "0x1c534661326b41c8b8aab5631ECED6D9755ff192",
+          "bullaBanker": "0xeB0f09EEF3DCc3f35f605dAefa474e6caab96CD6",
+          "frendLend": "0x6985d6af038f177438a6681d1F64d4409Dc8AaC2",
+          "batchCreate": "0x0af8C15D19058892cDEA66C8C74B7D7bB696FaD5",
+          "bullaInstantPayment": "0xce704a7Fae206ad009852258dDD8574B844eDa3b"
+        }
+      }
+    },
+    "8453": {
+      "name": "Base",
+      "chainId": 8453,
+      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-base/v2-main/gn",
+      "contracts": {
+        "bulla-contracts": {
+          "bullaManager": "0x127948A4286A67A0A5Cb56a2D0d54881077A4889",
+          "bullaClaim": "0x873C25e47f3C5e4bC524771DFed53B5B36ad5eA2",
+          "bullaBanker": "0x6811De39DC03245A15D54e2bc615821f9997bbC4",
+          "bullaFinance": "0xd3A33aE646701507eB043e2DB16f8C1428241F53",
+          "frendLend": "0x44ad74A14f268551Dd8619B094769C10089239C8",
+          "batchCreate": "0xec6013D62Af8dfB65B8248204Dd1913d2f1F0181",
+          "bullaInstantPayment": "0x26719d2A1073291559A9F5465Fafe73972B31b1f"
+        },
+        "bulla-contracts-v2": {
+          "bullaClaimV2": "0x8D59E594a3e4D0647C15887Cde5ECBfBE583b441",
+          "bullaApprovalRegistry": "0x909820879c91F1EB51c44367414ccBD19Ed06B75",
+          "bullaInvoice": "0x1E1d535a41515D3D2c29C1524C825236D67733E1",
+          "bullaClaimPermitLib": "0x07e0b0d697419b050ba531df6db8671f14433998",
+          "frendLendV2": "0x777A7966464a4E5684FE95025aDb2AD56bdaE77B"
+        }
+      }
+    },
+    "42161": {
+      "name": "Arbitrum",
+      "chainId": 42161,
+      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-arbitrum/v2-main/gn",
+      "contracts": {
+        "bulla-contracts": {
+          "bullaManager": "0xE14E624b29BcDa2ec409BBBf97037fEDe3803797",
+          "bullaClaim": "0x1c534661326b41c8b8aab5631ECED6D9755ff192",
+          "bullaBanker": "0xeB0f09EEF3DCc3f35f605dAefa474e6caab96CD6",
+          "bullaFinance": "0x5cBfeeF2Af2313Bd9C28484Af7508133Fa99E464",
+          "frendLend": "0xF75313de7055097b07e621DDD7FEEe9ea3e2147d",
+          "batchCreate": "0x0af8C15D19058892cDEA66C8C74B7D7bB696FaD5",
+          "bullaInstantPayment": "0x1b4DB52FD952F70d3D28bfbd406dB71940eD8cA9"
+        },
+        "bulla-contracts-v2": {
+          "bullaClaimV2": "0xb58f4f651553d51d95c69f59364a9ee1ca554b7e",
+          "bullaApprovalRegistry": "0x8948a00fac01110210f97f8f9fa107aa07e6f46c",
+          "bullaInvoice": "0x74c62f475464a03a462578d65629240b34221c1b",
+          "bullaClaimPermitLib": "0x07e0b0d697419b050ba531df6db8671f14433998",
+          "frendLendV2": "0x1a34dfd1ee17130228452f3d9cdda5908865d22d"
+        }
+      }
+    },
+    "42220": {
+      "name": "Celo",
+      "chainId": 42220,
+      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-celo/v2-main/gn",
+      "contracts": {
+        "bulla-contracts": {
+          "bullaManager": "0x68da2c92b60337aA55BAcF0d7e61126eDb535752",
+          "bullaClaim": "0x4Ba1453df995F4AAe2ef610A9c06fEecF0Fe2581",
+          "bullaBanker": "0xd2A779d4B8d2E4E7faFC0DA6F9d712fE19464D5B",
+          "bullaFinance": "0x15250D092a789e2304472eD581D587B714615d24",
+          "frendLend": "0xBAD5c53cC6b37d706E6153d397864E5fdbD38170",
+          "batchCreate": "0xe14e624b29bcda2ec409bbbf97037fede3803797",
+          "bullaInstantPayment": "0x48D283521Ff91a1e83A16a7138B549C34BeDD44c"
+        },
+        "bulla-contracts-v2": {
+          "bullaClaimV2": "0xd60f8fc651bdcee2c6ed9914d610c0e22ce190d6",
+          "bullaApprovalRegistry": "0x5e4fd9bb839ebea7eaf1c74edf4e92ed5c1bd773",
+          "bullaInvoice": "0xdeb31d99d92d92988b2cce4312c807fbf4406f4f",
+          "bullaClaimPermitLib": "0x07e0b0d697419b050ba531df6db8671f14433998",
+          "frendLendV2": "0xcc32679a9bbfce9e49d1eba4faf42e68a227bd06"
+        }
+      }
+    },
+    "43114": {
+      "name": "Avalanche",
+      "chainId": 43114,
+      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-avalanche/v2-main/gn",
+      "contracts": {
+        "bulla-contracts": {
+          "bullaManager": "0xAA6E5B4E34f3C3BA4D90694909dca7DDdf058079",
+          "bullaClaim": "0x68327a91E79f87F501bC8522fc333FB7A72393cb",
+          "bullaBanker": "0x4Ba1453df995F4AAe2ef610A9c06fEecF0Fe2581",
+          "bullaFinance": "0x15250D092a789e2304472eD581D587B714615d24",
+          "frendLend": "0xBAD5c53cC6b37d706E6153d397864E5fdbD38170",
+          "batchCreate": "0x1c534661326b41c8b8aab5631ECED6D9755ff192",
+          "bullaInstantPayment": "0xFcA0E74af938919E43541D40330212324C8aF27F"
+        },
+        "bulla-contracts-v2": {
+          "bullaClaimV2": "0xf28c50eb5996508b558f0ffdde637c4385117430",
+          "bullaApprovalRegistry": "0xb358fb00a1403fe38099dba2946631f092ea21b4",
+          "bullaInvoice": "0xd60f8fc651bdcee2c6ed9914d610c0e22ce190d6",
+          "bullaClaimPermitLib": "0x07e0b0d697419b050ba531df6db8671f14433998",
+          "frendLendV2": "0x7c3e51e84705fed1832bd6aabb9edd3e4681374e"
+        }
+      }
+    },
+    "11155111": {
+      "name": "Sepolia",
+      "chainId": 11155111,
+      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-sepolia/v2-main/gn",
+      "contracts": {
+        "bulla-contracts": {
+          "bullaManager": "0x15C43c1483816C0DEfcb3154b09A9e450d139033",
+          "bullaClaim": "0x3702D060cbB102b6AebF40B40880F77BeF3d7225",
+          "bullaBanker": "0x5369F71e1Fe238f0e6D938c734E2D2aE7296F362",
+          "bullaFinance": "0xB219ecd037E8A5410d2e8839586D9F3996685cfB",
+          "frendLend": "0x3E058834CE20A54F0755889c008D3fF62D33cE85",
+          "batchCreate": "0xbAB429068fc4A5455849f58C4Bf04F398e8006c1",
+          "bullaInstantPayment": "0x1cD1A83C2965CB7aD55d60551877Eb390e9C3d7A"
+        },
+        "bulla-contracts-v2": {
+          "bullaClaimV2": "0x0d9EF9d436fF341E500360a6B5E5750aB85BCCB6",
+          "bullaApprovalRegistry": "0xb1F9a06D72F8737B4fcf4550f1C8EA769772Ad76",
+          "bullaInvoice": "0xa2c4B7239A0d179A923751cC75277fe139AB092F",
+          "bullaClaimPermitLib": "0x334D266830326Be3Cc130C80D022eD98ea623379",
+          "frendLendV2": "0x4d6A66D32CF34270e4cc9C9F201CA4dB650Be3f2"
+        }
+      }
+    }
+  }
+}
