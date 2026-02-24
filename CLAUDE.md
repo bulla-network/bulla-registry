@@ -17,23 +17,32 @@ registry.json                    # All addresses + GraphQL endpoints (generated)
 bulla-backend/                   # Backend API (private repo, manually maintained)
   skills/
     authenticate.md              # Authenticate a wallet address with the Bulla backend using Sign-In with Ethereum (SIWE).
+
+bulla-contracts-v2/              # V2 contracts
+  address_config.json
+  abis/                          # BullaApprovalRegistry, BullaClaimPermitLib, BullaClaimV2, BullaFrendLendV2, BullaInvoice
+  typechain/                     # TypeChain generated types
+  skills/
+    create-invoice.md            # Create an on-chain invoice using the BullaInvoice controller contract.
+    offer-frendlend.md           # Create a peer-to-peer loan offer using the BullaFrendLendV2 controller.
+    pay-invoice.md               # Pay an existing on-chain invoice.
 ```
 
 ## Networks
 
 | Chain ID | Name | V1 | V2 | Subgraph |
 |----------|------|----|----|----------|
-| 1 | Ethereum Mainnet | no | no | no |
-| 10 | Optimism | no | no | no |
-| 56 | BNB Chain | no | no | no |
-| 100 | Gnosis Chain | no | no | no |
-| 137 | Polygon | no | no | no |
+| 1 | Ethereum Mainnet | no | yes | no |
+| 10 | Optimism | no | yes | no |
+| 56 | BNB Chain | no | yes | no |
+| 100 | Gnosis Chain | no | yes | no |
+| 137 | Polygon | no | yes | no |
 | 151 | RedBelly | no | no | no |
-| 8453 | Base | no | no | no |
-| 42161 | Arbitrum | no | no | no |
-| 42220 | Celo | no | no | no |
-| 43114 | Avalanche | no | no | no |
-| 11155111 | Sepolia | no | no | no |
+| 8453 | Base | no | yes | no |
+| 42161 | Arbitrum | no | yes | no |
+| 42220 | Celo | no | yes | no |
+| 43114 | Avalanche | no | yes | no |
+| 11155111 | Sepolia | no | yes | no |
 
 ## How to Use
 
