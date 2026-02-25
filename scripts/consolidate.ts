@@ -6,7 +6,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 
 // Source repos that provide contract addresses
-const CONTRACT_SOURCES = ["bulla-contracts", "bulla-contracts-v2"];
+const CONTRACT_SOURCES = ["bulla-contracts", "bulla-contracts-v2", "factoring-contracts"];
 
 // Source repo that provides GraphQL endpoints
 const GRAPHQL_SOURCE = "bulla-subgraph";
@@ -150,6 +150,7 @@ const REPO_DESCRIPTIONS: Record<string, string> = {
   "bulla-contracts-v2": "V2 contracts",
   "bulla-subgraph": "GraphQL subgraph",
   "bulla-backend": "Backend API (private repo, manually maintained)",
+  "factoring-contracts": "Factoring contracts",
 };
 
 function getSkillDescription(skillPath: string): string {
@@ -228,14 +229,15 @@ function buildRegistryStructure(): string {
 
 function buildNetworksTable(registry: Registry): string {
   const lines: string[] = [];
-  lines.push("| Chain ID | Name | V1 | V2 | Subgraph |");
-  lines.push("|----------|------|----|----|----------|");
+  lines.push("| Chain ID | Name | V1 | V2 | Factoring | Subgraph |");
+  lines.push("|----------|------|----|----|-----------|----------|");
 
   for (const [chainId, network] of Object.entries(registry.networks)) {
     const v1 = network.contracts["bulla-contracts"] ? "yes" : "no";
     const v2 = network.contracts["bulla-contracts-v2"] ? "yes" : "no";
+    const factoring = network.contracts["factoring-contracts"] ? "yes" : "no";
     const subgraph = network.graphql ? "yes" : "no";
-    lines.push(`| ${chainId} | ${network.name} | ${v1} | ${v2} | ${subgraph} |`);
+    lines.push(`| ${chainId} | ${network.name} | ${v1} | ${v2} | ${factoring} | ${subgraph} |`);
   }
 
   return lines.join("\n");

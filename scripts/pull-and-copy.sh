@@ -12,7 +12,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 ORG="bulla-network"
-BRANCH="main"
 LOCAL_MODE=false
 
 if [[ "${1:-}" == "--local" ]]; then
@@ -20,11 +19,12 @@ if [[ "${1:-}" == "--local" ]]; then
   WORKSPACE_ROOT="$(cd "$ROOT/.." && pwd)"
 fi
 
-# Public source repos only (bulla-backend is private, maintained manually)
-REPOS=(
-  "bulla-contracts"
-  "bulla-contracts-v2"
-  "bulla-subgraph"
+# Public source repos and their branches
+declare -A REPO_BRANCHES=(
+  ["bulla-contracts"]="main"
+  ["bulla-contracts-v2"]="main"
+  ["bulla-subgraph"]="v2-main"
+  ["factoring-contracts"]="main"
 )
 
 copy_from_local() {
@@ -36,28 +36,31 @@ copy_from_local() {
     return
   fi
 
+  # Stage in a temp directory first, only replace on success
+  local staging
+  staging=$(mktemp -d)
+  cp -r "$src"/* "$staging"/
+
   local dest="$ROOT/$repo"
   rm -rf "$dest"
   mkdir -p "$dest"
+  cp -r "$staging"/* "$dest"/
+  rm -rf "$staging"
 
-  # Copy all contents preserving structure
-  cp -r "$src"/* "$dest"/
   echo "Copied $repo from local workspace"
 }
 
 copy_from_github() {
   local repo="$1"
-  local dest="$ROOT/$repo"
-  rm -rf "$dest"
-  mkdir -p "$dest"
+  local branch="${REPO_BRANCHES[$repo]}"
 
   local tmp
   tmp=$(mktemp -d)
 
-  echo "Fetching $repo from GitHub..."
-  if ! git clone --depth 1 --branch "$BRANCH" --filter=blob:none --sparse \
+  echo "Fetching $repo (branch: $branch) from GitHub..."
+  if ! git clone --depth 1 --branch "$branch" --filter=blob:none --sparse \
     "https://github.com/$ORG/$repo.git" "$tmp/$repo" 2>/dev/null; then
-    echo "Warning: Failed to clone $repo, skipping"
+    echo "Warning: Failed to clone $repo, skipping (existing data preserved)"
     rm -rf "$tmp"
     return
   fi
@@ -67,10 +70,14 @@ copy_from_github() {
   cd "$ROOT"
 
   if [[ -d "$tmp/$repo/bulla_registry_export" ]]; then
+    # Only replace destination after confirming new data exists
+    local dest="$ROOT/$repo"
+    rm -rf "$dest"
+    mkdir -p "$dest"
     cp -r "$tmp/$repo/bulla_registry_export"/* "$dest"/
     echo "Copied $repo from GitHub"
   else
-    echo "Warning: bulla_registry_export/ not found in $repo, skipping"
+    echo "Warning: bulla_registry_export/ not found in $repo, skipping (existing data preserved)"
   fi
 
   rm -rf "$tmp"
@@ -79,7 +86,7 @@ copy_from_github() {
 echo "=== Pulling bulla_registry_export from public source repos ==="
 echo ""
 
-for repo in "${REPOS[@]}"; do
+for repo in "${!REPO_BRANCHES[@]}"; do
   if $LOCAL_MODE; then
     copy_from_local "$repo"
   else
