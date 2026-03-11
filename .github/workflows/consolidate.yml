@@ -4,8 +4,6 @@ on:
   repository_dispatch:
     types: [source-updated]
   workflow_dispatch:
-  push:
-    branches: [main]
 
 jobs:
   consolidate:
