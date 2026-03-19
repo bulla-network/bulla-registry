@@ -20,7 +20,7 @@ Authenticate a wallet address with the Bulla backend using Sign-In with Ethereum
 ### Step 1: Get Message
 
 ```
-GET /auth/{walletAddress}/getMessage
+GET /message/{walletAddress}
 ```
 
 Returns a SIWE-formatted message containing a unique nonce.
@@ -36,7 +36,7 @@ Returns a SIWE-formatted message containing a unique nonce.
 ### Step 2: Verify Signature
 
 ```
-POST /auth/{walletAddress}/verifyMessage
+POST /verify/{walletAddress}
 Content-Type: text/plain
 Body: <signature>
 ```
@@ -59,9 +59,9 @@ The response also includes a `Set-Cookie` header:
 
 ## Steps
 
-1. Call `GET /auth/{walletAddress}/getMessage` to retrieve the nonce message
+1. Call `GET /message/{walletAddress}` to retrieve the nonce message
 2. Sign the message using `personal_sign` (EIP-191) with the wallet's private key
-3. Call `POST /auth/{walletAddress}/verifyMessage` with the signature as the request body
+3. Call `POST /verify/{walletAddress}` with the signature as the request body
 4. The response contains a JWT token and sets a cookie for subsequent requests
 5. Store the JWT token or cookie for use in authenticated API calls
 
@@ -70,7 +70,7 @@ The response also includes a `Set-Cookie` header:
 ```javascript
 // Step 1: Get the message to sign
 const response = await fetch(
-  `https://apiauth.bulla.network/auth/${walletAddress}/getMessage`,
+  `https://apiauth.bulla.network/message/${walletAddress}`,
 );
 const { message } = await response.json();
 
@@ -79,7 +79,7 @@ const signature = await wallet.signMessage(message);
 
 // Step 3: Verify the signature
 const verifyResponse = await fetch(
-  `https://apiauth.bulla.network/auth/${walletAddress}/verifyMessage`,
+  `https://apiauth.bulla.network/verify/${walletAddress}`,
   {
     method: "POST",
     headers: { "Content-Type": "text/plain" },
