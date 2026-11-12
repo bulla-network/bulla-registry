@@ -96,7 +96,7 @@ Read the relevant skill file in `<repo>/skills/`. Each skill documents:
 
 ## Updating
 
-This registry is updated via GitHub Actions when source repos push changes. To update manually:
+This registry is updated hourly by the Consolidate Registry workflow, which pulls each source repo's export and commits as the bulla-registry-sync GitHub App. To run it now, start the workflow from the Actions tab. To update manually:
 
 ```bash
 npm install

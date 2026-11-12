@@ -1,21 +1,41 @@
 name: Consolidate Registry
 
+# Runs on a schedule and reads the public source repos itself, so the sources need no token to notify it.
+# It writes with a short-lived token minted from the bulla-registry-sync GitHub App, which doesn't expire.
 on:
+  schedule:
+    - cron: "17 * * * *" # hourly
+  workflow_dispatch:
   repository_dispatch:
     types: [source-updated]
-  workflow_dispatch:
+
+concurrency:
+  group: consolidate-registry
+  cancel-in-progress: false
+
+permissions: {}
 
 jobs:
   consolidate:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    # The app's private key is an environment secret, readable only by workflows running on main.
+    environment: registry-sync
 
     steps:
+      - name: Mint a GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.REGISTRY_APP_ID }}
+          private-key: ${{ secrets.REGISTRY_APP_PRIVATE_KEY }}
+          repositories: bulla-registry
+          permission-contents: write
+          permission-actions: write
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.BULLA_REGISTRY_DISPATCH }}
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -32,16 +52,28 @@ jobs:
       - name: Consolidate registry
         run: npm run consolidate
 
+      # git status, not git diff: a new file (e.g. a new ABI) is a change too.
       - name: Check for changes
         id: changes
         run: |
-          git diff --quiet || echo "changed=true" >> $GITHUB_OUTPUT
+          if [ -n "$(git status --porcelain)" ]; then echo "changed=true" >> "$GITHUB_OUTPUT"; fi
 
       - name: Commit and push
         if: steps.changes.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          user_id=$(gh api "/users/${APP_SLUG}[bot]" --jq .id)
+          git config user.name "${APP_SLUG}[bot]"
+          git config user.email "${user_id}+${APP_SLUG}[bot]@users.noreply.github.com"
           git add -A
           git commit -m "chore: update registry from source repos"
           git push
+
+      # GitHub turns off scheduled workflows in a public repo after 60 days without activity.
+      # Re-enabling the workflow through the API on every run resets that clock.
+      - name: Keep the schedule alive
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: gh api -X PUT "repos/${GITHUB_REPOSITORY}/actions/workflows/consolidate.yml/enable"
