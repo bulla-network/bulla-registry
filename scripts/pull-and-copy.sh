@@ -19,17 +19,25 @@ if [[ "${1:-}" == "--local" ]]; then
   WORKSPACE_ROOT="$(cd "$ROOT/.." && pwd)"
 fi
 
-# Public source repos and their branches
-declare -A REPO_BRANCHES=(
-  ["bulla-contracts"]="main"
+# Registry folder -> public source repo and branch.
+# The folder names are what consolidate.ts reads; the repo names are the real GitHub names.
+#
+# bulla-contracts (V1) isn't pulled: the repo is archived. Its last export (bulla-contracts@9fd66de)
+# is committed in bulla-contracts/ and still goes into registry.json, since the V1 contracts stay deployed.
+declare -A SOURCE_REPOS=(
+  ["bulla-contracts-v2"]="bulla-contracts-V2"
+  ["bulla-subgraph"]="bulla-network-subgraph"
+  ["factoring-contracts"]="factoring-contracts"
+)
+declare -A SOURCE_BRANCHES=(
   ["bulla-contracts-v2"]="main"
-  ["bulla-subgraph"]="v2-main"
+  ["bulla-subgraph"]="main"
   ["factoring-contracts"]="main"
 )
 
 copy_from_local() {
   local repo="$1"
-  local src="$WORKSPACE_ROOT/$repo/bulla_registry_export"
+  local src="$WORKSPACE_ROOT/${SOURCE_REPOS[$repo]}/bulla_registry_export"
 
   if [[ ! -d "$src" ]]; then
     echo "Warning: $src not found, skipping $repo"
@@ -52,16 +60,19 @@ copy_from_local() {
 
 copy_from_github() {
   local repo="$1"
-  local branch="${REPO_BRANCHES[$repo]}"
+  local source="${SOURCE_REPOS[$repo]}"
+  local branch="${SOURCE_BRANCHES[$repo]}"
 
   local tmp
   tmp=$(mktemp -d)
 
-  echo "Fetching $repo (branch: $branch) from GitHub..."
+  echo "Fetching $repo from $ORG/$source (branch: $branch)..."
   if ! git clone --depth 1 --branch "$branch" --filter=blob:none --sparse \
-    "https://github.com/$ORG/$repo.git" "$tmp/$repo" 2>/dev/null; then
-    echo "Warning: Failed to clone $repo, skipping (existing data preserved)"
+    "https://github.com/$ORG/$source.git" "$tmp/$repo" 2>/dev/null; then
+    # A source that can't be fetched fails the run, so a renamed repo or branch can't go unnoticed.
+    echo "::error::Failed to clone $ORG/$source (branch: $branch) for $repo"
     rm -rf "$tmp"
+    FAILED+=("$repo")
     return
   fi
 
@@ -86,7 +97,8 @@ copy_from_github() {
 echo "=== Pulling bulla_registry_export from public source repos ==="
 echo ""
 
-for repo in "${!REPO_BRANCHES[@]}"; do
+FAILED=()
+for repo in "${!SOURCE_REPOS[@]}"; do
   if $LOCAL_MODE; then
     copy_from_local "$repo"
   else
@@ -95,5 +107,9 @@ for repo in "${!REPO_BRANCHES[@]}"; do
 done
 
 echo ""
+if [[ ${#FAILED[@]} -gt 0 ]]; then
+  echo "=== Failed: ${FAILED[*]} (their existing data was kept) ==="
+  exit 1
+fi
 echo "=== Done ==="
 echo "Note: bulla-backend skills are maintained manually in bulla-backend/"
