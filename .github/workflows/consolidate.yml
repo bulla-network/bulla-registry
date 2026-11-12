@@ -1,13 +1,17 @@
 name: Consolidate Registry
 
-# Runs on a schedule and reads the public source repos itself, so the sources need no token to notify it.
-# It writes with a short-lived token minted from the bulla-registry-sync GitHub App, which doesn't expire.
+# Source repos start this after a merge to main, with a token from the bulla-registry-notify app (Actions: write
+# on this repo only). A daily run catches any trigger that was missed. The run reads the public source repos
+# itself, and writes with a short-lived token from the bulla-registry-sync app. Neither app's key expires.
 on:
-  schedule:
-    - cron: "17 * * * *" # hourly
   workflow_dispatch:
-  repository_dispatch:
-    types: [source-updated]
+    inputs:
+      source:
+        description: "Repo that triggered this run (set by the source repos' notify step)"
+        required: false
+        default: manual
+  schedule:
+    - cron: "17 6 * * *" # daily safety net
 
 concurrency:
   group: consolidate-registry
@@ -22,6 +26,11 @@ jobs:
     environment: registry-sync
 
     steps:
+      - name: Triggered by
+        env:
+          SOURCE: ${{ inputs.source || github.event_name }}
+        run: echo "Triggered by $SOURCE" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Mint a GitHub App token
         id: app-token
         uses: actions/create-github-app-token@v2

@@ -12,7 +12,7 @@ See `CLAUDE.md` — it serves as the entry point for agent discovery. Skill file
 
 ## How it works
 
-Each source repo (`bulla-contracts`, `bulla-contracts-V2`, `bulla-network-subgraph`, `factoring-contracts`) maintains a `bulla_registry_export/` folder with its addresses, ABIs, and skills. A GitHub Actions workflow pulls these exports every hour and runs a consolidation script that:
+Each source repo (`bulla-contracts`, `bulla-contracts-V2`, `bulla-network-subgraph`, `factoring-contracts`) maintains a `bulla_registry_export/` folder with its addresses, ABIs, and skills. A GitHub Actions workflow, started by each source repo after a merge to main and daily as a fallback, pulls these exports and runs a consolidation script that:
 
 1. Merges all `address_config.json` files into a single `registry.json`
 2. Generates `CLAUDE.md` from the template based on what's in the repo
