@@ -61,11 +61,14 @@ jobs:
       - name: Consolidate registry
         run: npm run consolidate
 
-      # git status, not git diff: a new file (e.g. a new ABI) is a change too.
+      # A new file (e.g. a new ABI) is a change. registry.json's generatedAt changes on every run, so a diff
+      # whose only changed lines are generatedAt is not: otherwise every run would commit.
       - name: Check for changes
         id: changes
         run: |
-          if [ -n "$(git status --porcelain)" ]; then echo "changed=true" >> "$GITHUB_OUTPUT"; fi
+          if [ -n "$(git ls-files --others --exclude-standard)" ] || ! git diff --quiet -I '"generatedAt":'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Commit and push
         if: steps.changes.outputs.changed == 'true'
