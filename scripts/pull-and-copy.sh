@@ -21,14 +21,15 @@ fi
 
 # Registry folder -> public source repo and branch.
 # The folder names are what consolidate.ts reads; the repo names are the real GitHub names.
+#
+# bulla-contracts (V1) isn't pulled: the repo is archived. Its last export (bulla-contracts@9fd66de)
+# is committed in bulla-contracts/ and still goes into registry.json, since the V1 contracts stay deployed.
 declare -A SOURCE_REPOS=(
-  ["bulla-contracts"]="bulla-contracts"
   ["bulla-contracts-v2"]="bulla-contracts-V2"
   ["bulla-subgraph"]="bulla-network-subgraph"
   ["factoring-contracts"]="factoring-contracts"
 )
 declare -A SOURCE_BRANCHES=(
-  ["bulla-contracts"]="master"
   ["bulla-contracts-v2"]="main"
   ["bulla-subgraph"]="main"
   ["factoring-contracts"]="main"
