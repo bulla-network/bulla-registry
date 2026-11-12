@@ -1,0 +1,30 @@
+name: Validate
+
+# Required check for PRs to main (the "Required checks" ruleset): the committed exports must consolidate.
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: validate registry
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          check-latest: true
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check the pull script
+        run: bash -n scripts/pull-and-copy.sh
+
+      - name: Consolidate the committed exports
+        run: npm run consolidate
