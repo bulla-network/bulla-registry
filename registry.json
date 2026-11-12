@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-11T19:53:55.616Z",
+  "generatedAt": "2026-11-12T19:37:26.438Z",
   "networks": {
     "1": {
       "name": "Ethereum Mainnet",
@@ -44,6 +44,23 @@
           "bullaInvoice": "0x12c0edd1de5578e02390209224f22fe1ca2d0d40",
           "bullaClaimPermitLib": "0x07e0b0d697419b050ba531df6db8671f14433998",
           "frendLendV2": "0x17eb35e2205820aa4ed30704226f2517507f433b"
+        }
+      }
+    },
+    "50": {
+      "name": "Unknown (50)",
+      "chainId": 50,
+      "graphql": null,
+      "contracts": {
+        "bulla-contracts": {
+          "bullaInstantPayment": "0xd60F8Fc651BdcEe2C6Ed9914d610c0E22cE190d6"
+        },
+        "bulla-contracts-v2": {
+          "bullaClaimV2": "0xbe25a1086de2b587b2d20e4b14c442cda2437945",
+          "bullaApprovalRegistry": "0x6985d6af038f177438a6681d1f64d4409dc8aac2",
+          "bullaInvoice": "0xba80d22b532eb1a2326334f35565af551f9c8af7",
+          "bullaClaimPermitLib": "0x07e0b0d697419b050ba531df6db8671f14433998",
+          "frendLendV2": "0xf34aa523a1cf4d91a3cb1c53cb50acd6eed0b153"
         }
       }
     },
@@ -180,6 +197,9 @@
           "bullaInvoice": "0x74c62f475464a03a462578d65629240b34221c1b",
           "bullaClaimPermitLib": "0x07e0b0d697419b050ba531df6db8671f14433998",
           "frendLendV2": "0x1a34dfd1ee17130228452f3d9cdda5908865d22d"
+        },
+        "factoring-contracts": {
+          "bullaFactoringV2_1_TCS": "0x30fbdae8d1a2946ca00137eaf3de9b512d1ee859"
         }
       }
     },
@@ -251,7 +271,8 @@
           "frendLendV2": "0x4d6A66D32CF34270e4cc9C9F201CA4dB650Be3f2"
         },
         "factoring-contracts": {
-          "bullaFactoringV2_1_TCS": "0xa5e94f122d421c9579a5cb1e687f55e109ba270b"
+          "bullaFactoringV2_1_TCS": "0xa5e94f122d421c9579a5cb1e687f55e109ba270b",
+          "bullaFactoringV2_2_FUNDORA": "0x262d36FA1740DBeEC72a88d69b6e1E4888dF41FF"
         }
       }
     }

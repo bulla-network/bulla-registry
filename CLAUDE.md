@@ -44,7 +44,7 @@ bulla-subgraph/                  # GraphQL subgraph
 
 factoring-contracts/             # Factoring contracts
   address_config.json
-  abis/                          # BullaFactoringV1, BullaFactoringV2_1, RedemptionQueue
+  abis/                          # BullaFactoringV1, BullaFactoringV2_1, BullaFactoringV2_2, RedemptionQueue
   skills/
     deposit-to-pool.md           # Deposit USDC into a BullaFactoring pool (ERC4626 vault) to receive pool shares representing your proportional ownership of the fund.
     redeem-from-pool.md          # Redeem pool shares from a BullaFactoring pool to withdraw USDC.
@@ -56,12 +56,13 @@ factoring-contracts/             # Factoring contracts
 |----------|------|----|----|-----------|----------|
 | 1 | Ethereum Mainnet | yes | yes | no | yes |
 | 10 | Optimism | yes | yes | no | yes |
+| 50 | Unknown (50) | yes | yes | no | no |
 | 56 | BNB Chain | yes | yes | no | yes |
 | 100 | Gnosis Chain | yes | yes | no | yes |
 | 137 | Polygon | yes | yes | no | yes |
 | 151 | RedBelly | yes | no | yes | yes |
 | 8453 | Base | yes | yes | yes | yes |
-| 42161 | Arbitrum | yes | yes | no | yes |
+| 42161 | Arbitrum | yes | yes | yes | yes |
 | 42220 | Celo | yes | yes | no | yes |
 | 43114 | Avalanche | yes | yes | no | yes |
 | 11155111 | Sepolia | yes | yes | yes | yes |
