@@ -3,6 +3,7 @@
   "endpoints": {
     "1": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-mainnet/v2-main/gn",
     "10": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-optimism/v2-main/gn",
+    "50": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-xdc/v2-main/gn",
     "56": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-bnb_chain/v2-main/gn",
     "100": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-gnosis/v2-main/gn",
     "137": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-polygon/v2-main/gn",
