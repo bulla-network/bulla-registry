@@ -26,5 +26,18 @@ jobs:
       - name: Check the pull script
         run: bash -n scripts/pull-and-copy.sh
 
+      # Fails if the result doesn't match registry.schema.json, before anything else runs.
       - name: Consolidate the committed exports
         run: npm run consolidate
+
+      - name: Test the checks
+        run: npm test
+
+      # registry.json and CLAUDE.md are generated: a PR must commit what the exports produce.
+      # generatedAt changes on every run, so it is ignored.
+      - name: Committed registry.json matches the exports
+        run: |
+          if ! git diff --exit-code -I '"generatedAt":' -- registry.json CLAUDE.md; then
+            echo "::error::registry.json or CLAUDE.md is out of date. Run npm run consolidate and commit the result."
+            exit 1
+          fi
