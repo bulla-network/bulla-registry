@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync, existsSync, readdirSync } from "fs";
 import { join, dirname, basename } from "path";
 import { fileURLToPath } from "url";
+import { validateRegistry } from "./validate-registry.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -11,20 +12,35 @@ const CONTRACT_SOURCES = ["bulla-contracts", "bulla-contracts-v2", "factoring-co
 // Source repo that provides GraphQL endpoints
 const GRAPHQL_SOURCE = "bulla-subgraph";
 
-// Network name mapping by chainId
-const NETWORK_NAMES: Record<string, string> = {
-  "1": "Ethereum Mainnet",
-  "10": "Optimism",
-  "56": "BNB Chain",
-  "100": "Gnosis Chain",
-  "137": "Polygon",
-  "151": "RedBelly",
-  "8453": "Base",
-  "42161": "Arbitrum",
-  "42220": "Celo",
-  "43114": "Avalanche",
-  "11155111": "Sepolia",
+// Source repo (and file in its export) that provides the factoring pools and their clients
+const POOLS_SOURCE = "factoring-contracts";
+const POOLS_FILE = "pools.json";
+
+// Every network the registry lists. A chain ID that a source exports but that isn't here fails the run:
+// add it with its name and its slug, the network's name in the subgraph (bulla-contracts-<slug>) and pools.json.
+const NETWORKS: Record<string, { name: string; slug: string }> = {
+  "1": { name: "Ethereum Mainnet", slug: "mainnet" },
+  "10": { name: "Optimism", slug: "optimism" },
+  "50": { name: "XDC", slug: "xdc" },
+  "56": { name: "BNB Chain", slug: "bnb_chain" },
+  "100": { name: "Gnosis Chain", slug: "gnosis" },
+  "137": { name: "Polygon", slug: "polygon" },
+  "151": { name: "RedBelly", slug: "redbelly" },
+  "8453": { name: "Base", slug: "base" },
+  "42161": { name: "Arbitrum", slug: "arbitrum" },
+  "42220": { name: "Celo", slug: "celo" },
+  "43114": { name: "Avalanche", slug: "avalanche" },
+  "11155111": { name: "Sepolia", slug: "sepolia" },
 };
+
+// The subgraph's Goldsky project. Each network's endpoint is <base>/bulla-contracts-<slug>/<tag>/gn.
+const GOLDSKY_SUBGRAPHS = "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs";
+// The tag networks[].graphql uses when the subgraph export has no endpoint for a network.
+const LEGACY_TAG = "v2-main";
+
+function subgraphEndpoint(slug: string, tag: string): string {
+  return `${GOLDSKY_SUBGRAPHS}/bulla-contracts-${slug}/${tag}/gn`;
+}
 
 interface ContractAddressConfig {
   repo: string;
@@ -36,16 +52,26 @@ interface GraphQLConfig {
   endpoints: Record<string, string>;
 }
 
+interface PoolsFile {
+  clients: Record<string, { displayName: string; website?: string; logo?: string }>;
+  pools: Array<Record<string, unknown>>;
+}
+
 interface NetworkEntry {
   name: string;
   chainId: number;
+  slug: string;
   graphql: string | null;
+  subgraph: { dev: string; prod: string };
   contracts: Record<string, Record<string, string>>;
 }
 
 interface Registry {
+  $schema: string;
   generatedAt: string;
   networks: Record<string, NetworkEntry>;
+  clients: PoolsFile["clients"];
+  pools: PoolsFile["pools"];
 }
 
 function loadJSON<T>(path: string): T | null {
@@ -56,91 +82,95 @@ function loadJSON<T>(path: string): T | null {
   return JSON.parse(readFileSync(path, "utf-8")) as T;
 }
 
-function consolidate(): void {
-  const registry: Registry = {
-    generatedAt: new Date().toISOString(),
-    networks: {},
-  };
+function fail(errors: string[]): never {
+  console.error(`\nConsolidation failed, nothing was written:\n  ${errors.join("\n  ")}`);
+  process.exit(1);
+}
 
-  // Initialize all known networks
-  for (const [chainId, name] of Object.entries(NETWORK_NAMES)) {
-    registry.networks[chainId] = {
+function consolidate(): void {
+  const errors: string[] = [];
+  const networks: Record<string, NetworkEntry> = {};
+
+  for (const [chainId, { name, slug }] of Object.entries(NETWORKS)) {
+    networks[chainId] = {
       name,
       chainId: Number(chainId),
+      slug,
       graphql: null,
+      subgraph: { dev: subgraphEndpoint(slug, "dev"), prod: subgraphEndpoint(slug, "prod") },
       contracts: {},
     };
   }
 
-  // Load GraphQL endpoints
-  const graphqlPath = join(ROOT, GRAPHQL_SOURCE, "address_config.json");
-  const graphqlConfig = loadJSON<GraphQLConfig>(graphqlPath);
-  if (graphqlConfig) {
-    for (const [chainId, url] of Object.entries(graphqlConfig.endpoints)) {
-      if (registry.networks[chainId]) {
-        registry.networks[chainId].graphql = url;
-      }
+  // GraphQL endpoints (the legacy single endpoint per network)
+  const graphqlConfig = loadJSON<GraphQLConfig>(join(ROOT, GRAPHQL_SOURCE, "address_config.json"));
+  for (const [chainId, url] of Object.entries(graphqlConfig?.endpoints ?? {})) {
+    const network = networks[chainId];
+    if (!network) {
+      errors.push(`chainId ${chainId} from ${GRAPHQL_SOURCE} is not in NETWORKS (scripts/consolidate.ts)`);
+      continue;
+    }
+    const expected = `${GOLDSKY_SUBGRAPHS}/bulla-contracts-${network.slug}/`;
+    if (!url.startsWith(expected)) {
+      errors.push(`${GRAPHQL_SOURCE}'s endpoint for ${chainId} (${url}) doesn't start with ${expected}`);
+    }
+    network.graphql = url;
+  }
+  for (const network of Object.values(networks)) {
+    if (!network.graphql) {
+      network.graphql = subgraphEndpoint(network.slug, LEGACY_TAG);
+      console.log(`  ${GRAPHQL_SOURCE} has no endpoint for ${network.name} (${network.chainId}); using ${LEGACY_TAG}`);
     }
   }
 
-  // Load contract addresses from each source
+  // Contract addresses from each source
   for (const source of CONTRACT_SOURCES) {
-    const configPath = join(ROOT, source, "address_config.json");
-    const config = loadJSON<ContractAddressConfig>(configPath);
+    const config = loadJSON<ContractAddressConfig>(join(ROOT, source, "address_config.json"));
     if (!config) continue;
 
     for (const [chainId, contracts] of Object.entries(config.contracts)) {
-      if (!registry.networks[chainId]) {
-        console.warn(
-          `Warning: chainId ${chainId} from ${source} not in known networks, adding`
-        );
-        registry.networks[chainId] = {
-          name: `Unknown (${chainId})`,
-          chainId: Number(chainId),
-          graphql: null,
-          contracts: {},
-        };
+      if (!networks[chainId]) {
+        errors.push(`chainId ${chainId} from ${source} is not in NETWORKS (scripts/consolidate.ts)`);
+        continue;
       }
-
-      registry.networks[chainId].contracts[config.repo] = contracts;
+      networks[chainId].contracts[config.repo] = contracts;
     }
   }
 
-  // Sort networks by chainId
-  const sorted: Record<string, NetworkEntry> = {};
-  const sortedKeys = Object.keys(registry.networks).sort(
-    (a, b) => Number(a) - Number(b)
+  // Factoring pools and their clients. Logo paths are relative to pools.json upstream; make them
+  // relative to registry.json, which sits at the root next to the copied export.
+  const poolsPath = join(ROOT, POOLS_SOURCE, POOLS_FILE);
+  if (!existsSync(poolsPath)) fail([`${POOLS_SOURCE}/${POOLS_FILE} not found`]);
+  const poolsFile = JSON.parse(readFileSync(poolsPath, "utf-8")) as PoolsFile;
+  const clients: PoolsFile["clients"] = {};
+  for (const [key, client] of Object.entries(poolsFile.clients ?? {})) {
+    clients[key] =
+      client.logo && !client.logo.startsWith("https://")
+        ? { ...client, logo: `${POOLS_SOURCE}/${client.logo}` }
+        : client;
+  }
+
+  if (errors.length > 0) fail(errors);
+
+  const registry: Registry = {
+    $schema: "./registry.schema.json",
+    generatedAt: new Date().toISOString(),
+    networks,
+    clients,
+    pools: poolsFile.pools,
+  };
+
+  // Check the shape before writing, so a broken consolidation never reaches a commit.
+  const invalid = validateRegistry(registry, ROOT);
+  if (invalid.length > 0) fail(invalid.map((e) => `registry.schema.json: ${e}`));
+
+  // Integer-like keys keep ascending order in a JS object, so networks come out sorted by chainId.
+  writeFileSync(join(ROOT, "registry.json"), JSON.stringify(registry, null, 2) + "\n");
+  console.log(
+    `registry.json generated with ${Object.keys(networks).length} networks, ` +
+      `${Object.keys(clients).length} clients and ${registry.pools.length} pools; it matches registry.schema.json`
   );
-  for (const key of sortedKeys) {
-    sorted[key] = registry.networks[key];
-  }
-  registry.networks = sorted;
 
-  // Write output
-  const outputPath = join(ROOT, "registry.json");
-  writeFileSync(outputPath, JSON.stringify(registry, null, 2) + "\n");
-  console.log(`registry.json generated with ${sortedKeys.length} networks`);
-
-  // Validate
-  let issues = 0;
-  for (const [chainId, network] of Object.entries(registry.networks)) {
-    if (!network.graphql) {
-      console.warn(`  Warning: no GraphQL endpoint for ${network.name} (${chainId})`);
-      issues++;
-    }
-    if (Object.keys(network.contracts).length === 0) {
-      console.warn(`  Warning: no contracts for ${network.name} (${chainId})`);
-      issues++;
-    }
-  }
-
-  if (issues > 0) {
-    console.warn(`\n${issues} warnings found`);
-  } else {
-    console.log("All networks have GraphQL endpoints and contracts");
-  }
-
-  // Generate CLAUDE.md from template
   generateClaudeMd(registry);
 }
 
@@ -176,7 +206,8 @@ function listDir(dirPath: string, ext?: string): string[] {
 
 function buildRegistryStructure(): string {
   const lines: string[] = [];
-  lines.push("registry.json                    # All addresses + GraphQL endpoints (generated)");
+  lines.push("registry.json                    # Addresses, subgraph endpoints, factoring pools and clients (generated)");
+  lines.push("registry.schema.json             # JSON Schema registry.json is checked against");
 
   const repoDirs = readdirSync(ROOT)
     .filter((d) => {
@@ -229,15 +260,17 @@ function buildRegistryStructure(): string {
 
 function buildNetworksTable(registry: Registry): string {
   const lines: string[] = [];
-  lines.push("| Chain ID | Name | V1 | V2 | Factoring | Subgraph |");
-  lines.push("|----------|------|----|----|-----------|----------|");
+  lines.push("| Chain ID | Name | Slug | V1 | V2 | Factoring | Pools (active / all) |");
+  lines.push("|----------|------|------|----|----|-----------|----------------------|");
 
   for (const [chainId, network] of Object.entries(registry.networks)) {
     const v1 = network.contracts["bulla-contracts"] ? "yes" : "no";
     const v2 = network.contracts["bulla-contracts-v2"] ? "yes" : "no";
     const factoring = network.contracts["factoring-contracts"] ? "yes" : "no";
-    const subgraph = network.graphql ? "yes" : "no";
-    lines.push(`| ${chainId} | ${network.name} | ${v1} | ${v2} | ${factoring} | ${subgraph} |`);
+    const pools = registry.pools.filter((p) => p.chainId === network.chainId);
+    const active = pools.filter((p) => p.category === "active").length;
+    const poolCell = pools.length > 0 ? `${active} / ${pools.length}` : "-";
+    lines.push(`| ${chainId} | ${network.name} | ${network.slug} | ${v1} | ${v2} | ${factoring} | ${poolCell} |`);
   }
 
   return lines.join("\n");

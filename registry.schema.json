@@ -1,0 +1,201 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/bulla-network/bulla-registry/registry.schema.json",
+  "title": "Bulla registry",
+  "description": "The shape of registry.json, which every consumer depends on. scripts/consolidate.ts checks each consolidation against it before writing, so a run that breaks the shape or drops a required field fails before anything is committed. Rules JSON Schema can't express (network keys match chainId, pools reference known networks and clients, logo files exist, unique pool addresses) are checked in scripts/validate-registry.ts. The pool and client definitions copy factoring-contracts' pools.schema.json on purpose: a change upstream must also change this file, so it gets reviewed here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["generatedAt", "networks", "clients", "pools"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "networks": {
+      "type": "object",
+      "description": "Keyed by chain ID as a decimal string.",
+      "minProperties": 1,
+      "propertyNames": { "pattern": "^[1-9][0-9]*$" },
+      "additionalProperties": { "$ref": "#/definitions/network" }
+    },
+    "clients": {
+      "type": "object",
+      "description": "Keyed by client key, e.g. tcs. A client is who a factoring pool factors invoices for; one client can have many pools. From factoring-contracts' pools.json.",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/definitions/key" },
+      "additionalProperties": { "$ref": "#/definitions/client" }
+    },
+    "pools": {
+      "type": "array",
+      "description": "Every factoring pool on every chain, archived ones included. From factoring-contracts' pools.json.",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/pool" }
+    }
+  },
+  "definitions": {
+    "address": { "type": "string", "pattern": "^0x[0-9a-fA-F]{40}$" },
+    "key": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "bps": { "type": "integer", "minimum": 0, "maximum": 10000 },
+    "url": { "type": "string", "pattern": "^https://\\S+$" },
+    "slug": {
+      "type": "string",
+      "description": "The network's name in the subgraph (bulla-contracts-<slug>) and in pools.json.",
+      "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$"
+    },
+
+    "network": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "chainId", "slug", "graphql", "subgraph", "contracts"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1, "not": { "pattern": "^Unknown" } },
+        "chainId": { "type": "integer", "minimum": 1 },
+        "slug": { "$ref": "#/definitions/slug" },
+        "graphql": {
+          "$ref": "#/definitions/url",
+          "description": "Deprecated: the subgraph endpoint on today's v2-main/latest tag. It goes away once the dev and prod tags exist; use subgraph.prod or subgraph.dev instead."
+        },
+        "subgraph": { "$ref": "#/definitions/subgraphEndpoints" },
+        "contracts": {
+          "type": "object",
+          "description": "Keyed by source repo, then contract name.",
+          "minProperties": 1,
+          "propertyNames": { "enum": ["bulla-contracts", "bulla-contracts-v2", "factoring-contracts"] },
+          "additionalProperties": {
+            "type": "object",
+            "minProperties": 1,
+            "propertyNames": { "pattern": "^[A-Za-z][A-Za-z0-9_]*$" },
+            "additionalProperties": { "$ref": "#/definitions/address" }
+          }
+        }
+      }
+    },
+
+    "subgraphEndpoints": {
+      "type": "object",
+      "description": "One endpoint per Goldsky tag. They are constant (the network slug plus a fixed tag) and change only when a network is added; which build a tag serves is set by tagging in the subgraph repo.",
+      "additionalProperties": false,
+      "required": ["dev", "prod"],
+      "properties": {
+        "dev": { "$ref": "#/definitions/url" },
+        "prod": { "$ref": "#/definitions/url" }
+      }
+    },
+
+    "client": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["displayName"],
+      "properties": {
+        "displayName": { "type": "string", "minLength": 1 },
+        "website": { "$ref": "#/definitions/url" },
+        "logo": {
+          "type": "string",
+          "description": "An https URL, or a path relative to registry.json (e.g. factoring-contracts/logos/tcs.png). Absent: show the Bulla logo.",
+          "pattern": "^(https://\\S+|factoring-contracts/logos/[^/]+)$"
+        }
+      }
+    },
+
+    "category": {
+      "type": "string",
+      "description": "active: live, including test pools. archived: no longer in use but still resolves, e.g. a pool superseded by a redeploy.",
+      "enum": ["active", "archived"]
+    },
+    "shareToken": {
+      "type": "object",
+      "description": "The pool's own ERC-20 share token. Its address is the pool address.",
+      "additionalProperties": false,
+      "required": ["symbol", "name", "decimals"],
+      "properties": {
+        "symbol": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "decimals": { "type": "integer", "minimum": 0, "maximum": 36 }
+      }
+    },
+    "asset": {
+      "type": "object",
+      "description": "The underlying asset the pool takes deposits in and funds invoices with.",
+      "additionalProperties": false,
+      "required": ["address", "symbol", "name", "decimals", "kind"],
+      "properties": {
+        "address": { "$ref": "#/definitions/address" },
+        "symbol": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "decimals": { "type": "integer", "minimum": 0, "maximum": 36 },
+        "kind": { "type": "string", "enum": ["stable", "volatile"] }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["factoring", "deposit"],
+      "properties": {
+        "factoring": { "$ref": "#/definitions/address" },
+        "deposit": { "$ref": "#/definitions/address" },
+        "redeem": {
+          "$ref": "#/definitions/address",
+          "description": "Absent on V0 and V1 pools, which have no redeem permissions; present from V2.1 on."
+        }
+      }
+    },
+    "fees": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocolBps", "adminBps", "targetYieldBps"],
+      "properties": {
+        "protocolBps": { "$ref": "#/definitions/bps" },
+        "adminBps": { "$ref": "#/definitions/bps" },
+        "targetYieldBps": { "$ref": "#/definitions/bps" },
+        "insuranceBps": {
+          "$ref": "#/definitions/bps",
+          "description": "Absent before V2.2, which has no insurance fee; present on every V2.2 pool."
+        }
+      }
+    },
+    "pool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chainId",
+        "network",
+        "address",
+        "version",
+        "client",
+        "displayName",
+        "category",
+        "shareToken",
+        "asset",
+        "insured",
+        "enforceKyc",
+        "permissions",
+        "underwriter",
+        "fees",
+        "deployBlock"
+      ],
+      "properties": {
+        "chainId": { "type": "integer", "minimum": 1, "description": "A key of networks." },
+        "network": { "$ref": "#/definitions/slug", "description": "The slug of networks[chainId]." },
+        "address": { "$ref": "#/definitions/address", "description": "The pool contract, which is also its share token." },
+        "version": { "type": "string", "enum": ["V0", "V1", "V2_1", "V2_2"] },
+        "client": { "$ref": "#/definitions/key", "description": "A key of clients. Separate from poolKey: tcs-wyoming is client tcs." },
+        "poolKey": {
+          "$ref": "#/definitions/key",
+          "description": "The name factoring-contracts' deploy scripts take, e.g. tcs-wyoming. A redeploy keeps the poolKey, so several pools on a chain can share one, but only one of them is current (no supersededBy). Only pools those scripts manage have one."
+        },
+        "displayName": { "type": "string", "minLength": 1 },
+        "category": { "$ref": "#/definitions/category" },
+        "supersededBy": {
+          "$ref": "#/definitions/address",
+          "description": "The pool on the same chain that replaced this one when it was redeployed."
+        },
+        "shareToken": { "$ref": "#/definitions/shareToken" },
+        "asset": { "$ref": "#/definitions/asset" },
+        "insured": { "type": "boolean" },
+        "enforceKyc": { "type": "boolean" },
+        "permissions": { "$ref": "#/definitions/permissions" },
+        "underwriter": { "$ref": "#/definitions/address" },
+        "fees": { "$ref": "#/definitions/fees" },
+        "deployBlock": { "type": "integer", "minimum": 0, "description": "The block that created the pool; the subgraph's start block for it." }
+      }
+    }
+  }
+}
