@@ -10,7 +10,7 @@ Use `registry.json` — it contains all contract addresses, subgraph endpoints, 
 
 ## npm package
 
-`@bulla/registry` ships `registry.json`, `registry.schema.json`, the ABIs and the client logos, with TypeScript types generated from the schema.
+`@bulla/registry` ships `registry.json`, `registry.schema.json` and the ABIs, with TypeScript types generated from the schema.
 
 ```bash
 npm install @bulla/registry
@@ -23,7 +23,9 @@ const invoice: Address | undefined = registry.networks["1"]?.contracts["bulla-co
 const active: Pool[] = registry.pools.filter((p) => p.chainId === 42161 && p.category === "active");
 ```
 
-The JSON files are importable by their path in this repo, e.g. `@bulla/registry/registry.json`, `@bulla/registry/bulla-contracts-v2/abis/BullaInvoice.json`, or a client's `logo` (`@bulla/registry/factoring-contracts/logos/tcs.png`). Addresses are typed `` `0x${string}` ``, viem's `Address`.
+The JSON files are importable by their path in this repo, e.g. `@bulla/registry/registry.json` or `@bulla/registry/bulla-contracts-v2/abis/BullaInvoice.json`. Addresses are typed `` `0x${string}` ``, viem's `Address`.
+
+The client logo files are not in the package. A client's `logo` is either an https URL or a path in this repo (`factoring-contracts/logos/tcs.png`), which the frontend maps to its own copy.
 
 ### Versions
 
@@ -32,8 +34,8 @@ The Consolidate Registry workflow releases a new version when what the package s
 | Change | Bump |
 |--------|------|
 | A removed or renamed field, a field that is no longer required, or a removed enum value (`registry.schema.json`) | **major** |
-| A removed network, contract, pool, client, ABI, ABI function/event/error, or logo | **major** |
-| A new field or enum value, or a new network, contract, pool, client, ABI, ABI function/event/error, or logo | **minor** |
+| A removed network, contract, pool, client, ABI, or ABI function/event/error | **major** |
+| A new field or enum value, or a new network, contract, pool, client, ABI, or ABI function/event/error | **minor** |
 | A changed address, endpoint or other value; any other change (bytecode, descriptions) | **patch** |
 
 A rename is a removal plus an addition, so it is major. `generatedAt` is ignored.

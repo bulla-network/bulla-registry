@@ -1,5 +1,5 @@
 // Builds dist/ for the @bulla/registry npm package: registry.json as an ES module and a CommonJS module, with
-// TypeScript types generated from registry.schema.json. The JSON files (registry.json, the schema, ABIs, logos)
+// TypeScript types generated from registry.schema.json. The JSON files (registry.json, the schema, ABIs)
 // ship as they are, next to dist/; package.json's "files" lists them.
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { join, dirname } from "path";

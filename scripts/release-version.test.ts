@@ -159,17 +159,17 @@ test("ABIs: an added function is a minor, a removed one a major, anything else a
   assert.equal(bump(diffAbi("x/abis/A.json", { abi, bytecode: "0x00" }, { abi, bytecode: "0x01" })), "patch");
 });
 
-test("package files: a new ABI or logo is a minor, a removed one a major", () => {
+test("package files: a new ABI is a minor, a removed one a major", () => {
   const before = filesOnDisk();
   assert.ok(before.has("registry.json") && before.has("registry.schema.json"));
-  assert.ok([...before.keys()].some((p) => p.includes("/abis/")) && [...before.keys()].some((p) => p.includes("/logos/")));
-  assert.ok(![...before.keys()].some((p) => p.includes("/skills/") || p.startsWith("dist/")));
+  assert.ok([...before.keys()].some((p) => p.includes("/abis/")));
+  assert.ok(![...before.keys()].some((p) => p.includes("/skills/") || p.includes("/logos/") || p.startsWith("dist/")));
 
   const added = new Map(before).set("bulla-contracts-v2/abis/New.json", Buffer.from("[]"));
   assert.equal(bump(diffPackage(before, added)), "minor");
 
   const removed = new Map(before);
-  removed.delete([...before.keys()].find((p) => p.includes("/logos/"))!);
+  removed.delete([...before.keys()].find((p) => p.includes("/abis/"))!);
   assert.equal(bump(diffPackage(before, removed)), "major");
 
   assert.deepEqual(diffPackage(before, new Map(before)), []);

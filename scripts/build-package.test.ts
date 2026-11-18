@@ -29,8 +29,11 @@ test("the packed package works from ESM, CommonJS and TypeScript", { timeout: 12
   for (const p of ["dist/index.js", "dist/index.cjs", "dist/index.d.ts", "dist/index.d.cts", "registry.json", "registry.schema.json"])
     assert.ok(paths.includes(p), `${p} is in the package`);
   assert.ok(paths.some((p) => /^[^/]+\/abis\/.+\.json$/.test(p)), "ABIs are in the package");
-  assert.ok(paths.includes("factoring-contracts/logos/tcs.png"), "logos are in the package");
-  assert.ok(!paths.some((p) => p.startsWith("scripts/") || p.includes("/skills/") || p.startsWith("node_modules/")), paths.join("\n"));
+  // Not shipped: the client logos (the frontend keeps its own), skills, scripts.
+  assert.ok(
+    !paths.some((p) => p.startsWith("scripts/") || p.includes("/skills/") || p.includes("/logos/") || p.startsWith("node_modules/")),
+    paths.join("\n"),
+  );
 
   const app = join(dir, "app");
   mkdirSync(app);
@@ -47,9 +50,8 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const invoice: Address | undefined = registry.networks["1"]?.contracts["bulla-contracts-v2"]?.bullaInvoice;
 const active: Pool[] = named.pools.filter((p) => p.category === "active");
-const logo: string = require.resolve("@bulla/registry/factoring-contracts/logos/tcs.png");
 const abi: unknown = require("@bulla/registry/bulla-contracts-v2/abis/BullaInvoice.json");
-console.log(JSON.stringify({ invoice, active: active.length, same: registry === named, title: schema.title, logo: !!logo, abi: !!abi, registry }));
+console.log(JSON.stringify({ invoice, active: active.length, same: registry === named, title: schema.title, abi: !!abi, registry }));
 `,
   );
   writeFileSync(
@@ -74,7 +76,7 @@ console.log(JSON.stringify({ prod, same: reg.default === reg.registry }));
   assert.equal(esm.same, true);
   assert.equal(esm.title, "Bulla registry");
   assert.deepEqual(esm.registry, committed);
-  assert.ok(esm.logo && esm.abi);
+  assert.ok(esm.abi);
 
   const cjs = JSON.parse(run(process.execPath, ["out/cjs.cjs"], app));
   assert.deepEqual(cjs, { prod: committed.networks["8453"].subgraph.prod, same: true });
