@@ -6,6 +6,7 @@
 //          ABI function/event/error
 //   minor: a new field, network, contract, pool, client, ABI, or ABI function/event/error
 //   patch: any other change, e.g. a changed address or endpoint
+// The package ships only each ABI's abi array, so a change to an artifact's bytecode or metadata releases nothing.
 // A rename shows as a removal plus an addition, so it is major. generatedAt is ignored.
 //
 // Writes release=true|false and version=<x.y.z> to $GITHUB_OUTPUT, and the release notes to the file passed as
@@ -161,8 +162,8 @@ export function diffAbi(file: string, before: unknown, after: unknown): Change[]
     ...a.filter((f) => !b.includes(f)).map((f): Change => ({ bump: "major", what: `${file}: removed ${f}` })),
     ...b.filter((f) => !a.includes(f)).map((f): Change => ({ bump: "minor", what: `${file}: added ${f}` })),
   ];
-  // Bytecode, output types, parameter names and the like.
-  if (changes.length === 0 && JSON.stringify(before) !== JSON.stringify(after))
+  // Output types, parameter names and the like. Not bytecode or metadata: the package doesn't ship them.
+  if (changes.length === 0 && JSON.stringify(abiOf(before)) !== JSON.stringify(abiOf(after)))
     changes.push({ bump: "patch", what: `${file}: changed` });
   return changes;
 }
@@ -170,7 +171,7 @@ export function diffAbi(file: string, before: unknown, after: unknown): Change[]
 // ---------------------------------------------------------------------------------------------------------------
 // The package's files
 
-/** The files the package ships that changes are measured on (not dist/, which is built from registry.json and the schema). */
+/** The files changes are measured on: registry.json, the schema and the ABIs that dist/ is built from. */
 export const isPackageFile = (path: string): boolean =>
   path === "registry.json" || path === "registry.schema.json" || /^[^/]+\/abis\/[^/]+\.json$/.test(path);
 

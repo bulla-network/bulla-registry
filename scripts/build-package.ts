@@ -1,7 +1,7 @@
 // Builds dist/ for the @bulla/registry npm package: registry.json as an ES module and a CommonJS module, with
-// TypeScript types generated from registry.schema.json. The JSON files (registry.json, the schema, ABIs)
-// ship as they are, next to dist/; package.json's "files" lists them.
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+// TypeScript types generated from registry.schema.json, and each ABI as its bare abi array. registry.json and the
+// schema ship as they are, next to dist/; package.json's "files" lists them.
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { compile } from "json-schema-to-typescript";
@@ -56,6 +56,28 @@ export async function generateTypes(schema: JsonObject): Promise<string> {
   return `/**\n * An EVM address, as viem's Address.\n */\nexport type Address = \`0x\${string}\`;\n${types}`;
 }
 
+/**
+ * Writes each <repo>/abis/<Name>.json as dist/abis/<repo>/<Name>.json, keeping only the abi array. The V1 and V2
+ * exports are full compiler artifacts: their bytecode and metadata are compiled BUSL-1.1 code, which the package's
+ * MIT license must not cover, and consumers only need the ABI.
+ */
+export function writeAbis(root: string, out: string): string[] {
+  const written: string[] = [];
+  for (const repo of readdirSync(root)) {
+    const dir = join(root, repo, "abis");
+    if (repo === "node_modules" || repo.startsWith(".") || !statSync(join(root, repo)).isDirectory() || !existsSync(dir)) continue;
+    for (const name of readdirSync(dir).filter((f) => f.endsWith(".json"))) {
+      const artifact = JSON.parse(readFileSync(join(dir, name), "utf-8"));
+      const abi = Array.isArray(artifact) ? artifact : artifact.abi;
+      if (!Array.isArray(abi)) throw new Error(`${repo}/abis/${name} has no abi array`);
+      mkdirSync(join(out, "abis", repo), { recursive: true });
+      writeFileSync(join(out, "abis", repo, name), JSON.stringify(abi, null, 2) + "\n");
+      written.push(`${repo}/${name}`);
+    }
+  }
+  return written;
+}
+
 export async function buildPackage(root: string = ROOT, out: string = join(root, "dist")): Promise<void> {
   const registry = JSON.parse(readFileSync(join(root, "registry.json"), "utf-8"));
   const schema = JSON.parse(readFileSync(join(root, "registry.schema.json"), "utf-8"));
@@ -77,9 +99,11 @@ export async function buildPackage(root: string = ROOT, out: string = join(root,
   const declarations = `${header}${types}\nexport declare const registry: BullaRegistry;\nexport default registry;\n`;
   writeFileSync(join(out, "index.d.ts"), declarations);
   writeFileSync(join(out, "index.d.cts"), declarations);
+
+  writeAbis(root, out);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   await buildPackage();
-  console.log("Built dist/ (index.js, index.cjs, index.d.ts, index.d.cts)");
+  console.log("Built dist/ (index.js, index.cjs, index.d.ts, index.d.cts, abis/)");
 }

@@ -2,6 +2,7 @@
   "name": "@bulla/registry",
   "version": "1.0.0",
   "description": "Bulla protocol contract addresses, subgraph endpoints, factoring pools and clients, and ABIs, with TypeScript types",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bulla-network/bulla-registry.git"
@@ -26,13 +27,13 @@
       }
     },
     "./package.json": "./package.json",
+    "./abis/*": "./dist/abis/*",
     "./*": "./*"
   },
   "files": [
     "dist",
     "registry.json",
-    "registry.schema.json",
-    "*/abis/*.json"
+    "registry.schema.json"
   ],
   "sideEffects": false,
   "scripts": {

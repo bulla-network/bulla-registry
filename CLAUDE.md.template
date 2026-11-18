@@ -8,7 +8,7 @@ Central registry for Bulla protocol contract addresses, subgraph endpoints, fact
 - **Skills** (agent instructions): `<repo>/skills/*.md`
 - **ABIs**: `<repo>/abis/*.json`
 - **TypeChain types**: `<repo>/typechain/*.ts`
-- **npm**: `@bulla/registry` ships `registry.json` (typed), the schema and ABIs. In code, install it rather than copying addresses
+- **npm**: `@bulla/registry` ships `registry.json` (typed), the schema and ABIs (`@bulla/registry/abis/<repo>/<Name>.json`). In code, install it rather than copying addresses
 
 ## Registry Structure
 

@@ -10,7 +10,7 @@ Use `registry.json` — it contains all contract addresses, subgraph endpoints, 
 
 ## npm package
 
-`@bulla/registry` ships `registry.json`, `registry.schema.json` and the ABIs, with TypeScript types generated from the schema.
+`@bulla/registry` ships `registry.json`, `registry.schema.json` and the ABIs, with TypeScript types generated from the schema. It is MIT-licensed (`LICENSE`).
 
 ```bash
 npm install @bulla/registry
@@ -23,7 +23,9 @@ const invoice: Address | undefined = registry.networks["1"]?.contracts["bulla-co
 const active: Pool[] = registry.pools.filter((p) => p.chainId === 42161 && p.category === "active");
 ```
 
-The JSON files are importable by their path in this repo, e.g. `@bulla/registry/registry.json` or `@bulla/registry/bulla-contracts-v2/abis/BullaInvoice.json`. Addresses are typed `` `0x${string}` ``, viem's `Address`.
+Addresses are typed `` `0x${string}` ``, viem's `Address`.
+
+The JSON files are importable too: `@bulla/registry/registry.json`, `@bulla/registry/registry.schema.json`, and each ABI as `@bulla/registry/abis/<repo>/<Name>.json`, e.g. `@bulla/registry/abis/bulla-contracts-v2/BullaInvoice.json`. An ABI file is the bare `abi` array: the bytecode and metadata in this repo's V1 and V2 artifacts are compiled BUSL-1.1 code and are not published.
 
 The client logo files are not in the package. A client's `logo` is either an https URL or a path in this repo (`factoring-contracts/logos/tcs.png`), which the frontend maps to its own copy.
 
@@ -36,9 +38,9 @@ The Consolidate Registry workflow releases a new version when what the package s
 | A removed or renamed field, a field that is no longer required, or a removed enum value (`registry.schema.json`) | **major** |
 | A removed network, contract, pool, client, ABI, or ABI function/event/error | **major** |
 | A new field or enum value, or a new network, contract, pool, client, ABI, or ABI function/event/error | **minor** |
-| A changed address, endpoint or other value; any other change (bytecode, descriptions) | **patch** |
+| A changed address, endpoint or other value; any other change (e.g. a description, an ABI parameter name) | **patch** |
 
-A rename is a removal plus an addition, so it is major. `generatedAt` is ignored.
+A rename is a removal plus an addition, so it is major. `generatedAt` is ignored, and so are ABI bytecode and metadata, which the package does not ship.
 
 The workflow sets the version in `package.json`, commits it as bulla-registry-sync, publishes with npm trusted publishing (OIDC, no token), then tags the release (`v1.2.3`) with a GitHub release listing the changes. A change merged by hand (e.g. a schema change) is released by the next run, daily at the latest. To force a bigger bump, set a higher version in `package.json` in the PR. npm can take a few minutes after a publish to list the new version.
 

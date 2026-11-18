@@ -142,7 +142,7 @@ test("schema: a field becoming optional or an enum losing a value is a major", (
   assert.equal(bump(diffSchema(schema(), s4)), "patch");
 });
 
-test("ABIs: an added function is a minor, a removed one a major, anything else a patch", () => {
+test("ABIs: an added function is a minor, a removed one a major, another abi change a patch, bytecode nothing", () => {
   const abi = [
     { type: "constructor", inputs: [] },
     { type: "function", name: "pay", inputs: [{ type: "uint256", name: "id" }], outputs: [] },
@@ -156,7 +156,7 @@ test("ABIs: an added function is a minor, a removed one a major, anything else a
 
   const renamedParam = [...abi.slice(0, 1), { ...abi[1], inputs: [{ type: "uint256", name: "claimId" }] }];
   assert.equal(bump(diffAbi("x/abis/A.json", abi, renamedParam)), "patch");
-  assert.equal(bump(diffAbi("x/abis/A.json", { abi, bytecode: "0x00" }, { abi, bytecode: "0x01" })), "patch");
+  assert.deepEqual(diffAbi("x/abis/A.json", { abi, bytecode: "0x00" }, { abi, bytecode: "0x01" }), []);
 });
 
 test("package files: a new ABI is a minor, a removed one a major", () => {
