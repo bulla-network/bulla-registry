@@ -35,8 +35,6 @@ const NETWORKS: Record<string, { name: string; slug: string }> = {
 
 // The subgraph's Goldsky project. Each network's endpoint is <base>/bulla-contracts-<slug>/<tag>/gn.
 const GOLDSKY_SUBGRAPHS = "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs";
-// The tag networks[].graphql uses when the subgraph export has no endpoint for a network.
-const LEGACY_TAG = "v2-main";
 
 function subgraphEndpoint(slug: string, tag: string): string {
   return `${GOLDSKY_SUBGRAPHS}/bulla-contracts-${slug}/${tag}/gn`;
@@ -116,10 +114,11 @@ function consolidate(): void {
     }
     network.graphql = url;
   }
+  // graphql is taken as the subgraph exports it, never built here: the export decides which tag each network
+  // uses (v2-main, or latest on RedBelly). A network it doesn't list fails the run.
   for (const network of Object.values(networks)) {
     if (!network.graphql) {
-      network.graphql = subgraphEndpoint(network.slug, LEGACY_TAG);
-      console.log(`  ${GRAPHQL_SOURCE} has no endpoint for ${network.name} (${network.chainId}); using ${LEGACY_TAG}`);
+      errors.push(`${GRAPHQL_SOURCE} has no endpoint for ${network.name} (${network.chainId})`);
     }
   }
 
