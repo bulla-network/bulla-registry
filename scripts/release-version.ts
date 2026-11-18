@@ -3,8 +3,8 @@
 //
 // The rules (also in the README):
 //   major: a removed or renamed field (registry.schema.json), or a removed network, contract, pool, client, ABI,
-//          ABI function/event/error
-//   minor: a new field, network, contract, pool, client, ABI, or ABI function/event/error
+//          ABI function/event/error, or logo
+//   minor: a new field, network, contract, pool, client, ABI, ABI function/event/error, or logo
 //   patch: any other change, e.g. a changed address or endpoint
 // The package ships only each ABI's abi array, so a change to an artifact's bytecode or metadata releases nothing.
 // A rename shows as a removal plus an addition, so it is major. generatedAt is ignored.
@@ -171,9 +171,9 @@ export function diffAbi(file: string, before: unknown, after: unknown): Change[]
 // ---------------------------------------------------------------------------------------------------------------
 // The package's files
 
-/** The files changes are measured on: registry.json, the schema and the ABIs that dist/ is built from. */
+/** The files changes are measured on: registry.json, the schema, the logos, and the ABIs that dist/ is built from. */
 export const isPackageFile = (path: string): boolean =>
-  path === "registry.json" || path === "registry.schema.json" || /^[^/]+\/abis\/[^/]+\.json$/.test(path);
+  path === "registry.json" || path === "registry.schema.json" || /^[^/]+\/(abis\/[^/]+\.json|logos\/[^/]+)$/.test(path);
 
 /** Compares two snapshots of the package's files, keyed by path. */
 export function diffPackage(before: Map<string, Buffer>, after: Map<string, Buffer>): Change[] {
@@ -182,7 +182,7 @@ export function diffPackage(before: Map<string, Buffer>, after: Map<string, Buff
 
   for (const [path, a] of before) {
     const b = after.get(path);
-    const kind = path.includes("/abis/") ? "ABI" : "file";
+    const kind = path.includes("/abis/") ? "ABI" : path.includes("/logos/") ? "logo" : "file";
     if (!b) changes.push({ bump: "major", what: `removed ${kind} ${path}` });
     else if (a.equals(b)) continue;
     else if (path === "registry.json") changes.push(...diffRegistry(json(a), json(b)));
@@ -192,7 +192,7 @@ export function diffPackage(before: Map<string, Buffer>, after: Map<string, Buff
   }
   for (const path of after.keys()) {
     if (before.has(path)) continue;
-    const kind = path.includes("/abis/") ? "ABI" : "file";
+    const kind = path.includes("/abis/") ? "ABI" : path.includes("/logos/") ? "logo" : "file";
     changes.push({ bump: "minor", what: `added ${kind} ${path}` });
   }
   return changes;
@@ -225,11 +225,13 @@ export function filesOnDisk(root: string = ROOT): Map<string, Buffer> {
       if (isPackageFile(top)) files.set(top, readFileSync(full));
       continue;
     }
-    const dir = join(full, "abis");
-    if (!existsSync(dir)) continue;
-    for (const name of readdirSync(dir)) {
-      const path = `${top}/abis/${name}`;
-      if (isPackageFile(path)) files.set(path, readFileSync(join(dir, name)));
+    for (const sub of ["abis", "logos"]) {
+      const dir = join(full, sub);
+      if (!existsSync(dir)) continue;
+      for (const name of readdirSync(dir)) {
+        const path = `${top}/${sub}/${name}`;
+        if (isPackageFile(path)) files.set(path, readFileSync(join(dir, name)));
+      }
     }
   }
   return files;

@@ -10,7 +10,7 @@ Use `registry.json` — it contains all contract addresses, subgraph endpoints, 
 
 ## npm package
 
-`@bulla/registry` ships `registry.json`, `registry.schema.json` and the ABIs, with TypeScript types generated from the schema. It is MIT-licensed (`LICENSE`).
+`@bulla/registry` ships `registry.json`, `registry.schema.json`, the ABIs and the client logos, with TypeScript types generated from the schema. It is MIT-licensed (`LICENSE`), except the client logos: they belong to their owners, are included only to identify their pools, and are not covered by the license.
 
 ```bash
 npm install @bulla/registry
@@ -27,7 +27,7 @@ Addresses are typed `` `0x${string}` ``, viem's `Address`.
 
 The JSON files are importable too: `@bulla/registry/registry.json`, `@bulla/registry/registry.schema.json`, and each ABI as `@bulla/registry/abis/<repo>/<Name>.json`, e.g. `@bulla/registry/abis/bulla-contracts-v2/BullaInvoice.json`. An ABI file is the bare `abi` array: the bytecode and metadata in this repo's V1 and V2 artifacts are compiled BUSL-1.1 code and are not published.
 
-The client logo files are not in the package. A client's `logo` is either an https URL or a path in this repo (`factoring-contracts/logos/tcs.png`), which the frontend maps to its own copy.
+A client's `logo` is an https URL or a path from the package root: `factoring-contracts/logos/tcs.png` is `@bulla/registry/factoring-contracts/logos/tcs.png`. A bundler needs every logo in the bundle to resolve a path at runtime, e.g. a glob import of `@bulla/registry/factoring-contracts/logos/*`.
 
 ### Versions
 
@@ -36,9 +36,9 @@ The Consolidate Registry workflow releases a new version when what the package s
 | Change | Bump |
 |--------|------|
 | A removed or renamed field, a field that is no longer required, or a removed enum value (`registry.schema.json`) | **major** |
-| A removed network, contract, pool, client, ABI, or ABI function/event/error | **major** |
-| A new field or enum value, or a new network, contract, pool, client, ABI, or ABI function/event/error | **minor** |
-| A changed address, endpoint or other value; any other change (e.g. a description, an ABI parameter name) | **patch** |
+| A removed network, contract, pool, client, ABI, ABI function/event/error, or logo | **major** |
+| A new field or enum value, or a new network, contract, pool, client, ABI, ABI function/event/error, or logo | **minor** |
+| A changed address, endpoint or other value; any other change (e.g. a description, an ABI parameter name, a redrawn logo) | **patch** |
 
 A rename is a removal plus an addition, so it is major. `generatedAt` is ignored, and so are ABI bytecode and metadata, which the package does not ship.
 

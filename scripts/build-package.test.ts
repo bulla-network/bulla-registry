@@ -31,11 +31,9 @@ test("the packed package works from ESM, CommonJS and TypeScript", { timeout: 12
   assert.ok(paths.includes("dist/abis/bulla-contracts-v2/BullaInvoice.json"), "ABIs are in the package");
   // Only the abi arrays: the source repos' artifacts, with their BUSL bytecode, stay out.
   assert.ok(!paths.some((p) => /^[^/]+\/abis\//.test(p) && !p.startsWith("dist/")), paths.join("\n"));
-  // Not shipped: the client logos (the frontend keeps its own), skills, scripts.
-  assert.ok(
-    !paths.some((p) => p.startsWith("scripts/") || p.includes("/skills/") || p.includes("/logos/") || p.startsWith("node_modules/")),
-    paths.join("\n"),
-  );
+  assert.ok(paths.includes("factoring-contracts/logos/tcs.png"), "logos are in the package");
+  // Not shipped: skills, scripts.
+  assert.ok(!paths.some((p) => p.startsWith("scripts/") || p.includes("/skills/") || p.startsWith("node_modules/")), paths.join("\n"));
 
   const app = join(dir, "app");
   mkdirSync(app);
@@ -53,7 +51,11 @@ const require = createRequire(import.meta.url);
 const invoice: Address | undefined = registry.networks["1"]?.contracts["bulla-contracts-v2"]?.bullaInvoice;
 const active: Pool[] = named.pools.filter((p) => p.category === "active");
 const abi: unknown = require("@bulla/registry/abis/bulla-contracts-v2/BullaInvoice.json");
-console.log(JSON.stringify({ invoice, active: active.length, same: registry === named, title: schema.title, abi, registry }));
+// A relative logo is a path from the package root.
+const logos: string[] = Object.values(registry.clients)
+  .flatMap((c) => (c.logo && !c.logo.startsWith("https://") ? [c.logo] : []))
+  .map((logo) => require.resolve(\`@bulla/registry/\${logo}\`));
+console.log(JSON.stringify({ invoice, active: active.length, same: registry === named, title: schema.title, abi, logos, registry }));
 `,
   );
   writeFileSync(
@@ -81,6 +83,11 @@ console.log(JSON.stringify({ prod, same: reg.default === reg.registry }));
   // A bare abi array, with no bytecode.
   assert.ok(Array.isArray(esm.abi) && esm.abi.some((f: { name?: string }) => f.name === "createInvoice"));
   assert.ok(!JSON.stringify(esm.abi).includes('"bytecode"'));
+  // Every client's relative logo resolves inside the installed package.
+  const relativeLogos = Object.values(committed.clients as Record<string, { logo?: string }>).filter((c) => c.logo && !c.logo.startsWith("https://"));
+  assert.ok(relativeLogos.length > 0);
+  assert.equal(esm.logos.length, relativeLogos.length);
+  for (const file of esm.logos) assert.ok(file.includes("node_modules/@bulla/registry/factoring-contracts/logos/"), file);
 
   const cjs = JSON.parse(run(process.execPath, ["out/cjs.cjs"], app));
   assert.deepEqual(cjs, { prod: committed.networks["8453"].subgraph.prod, same: true });

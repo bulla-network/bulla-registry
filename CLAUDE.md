@@ -8,7 +8,7 @@ Central registry for Bulla protocol contract addresses, subgraph endpoints, fact
 - **Skills** (agent instructions): `<repo>/skills/*.md`
 - **ABIs**: `<repo>/abis/*.json`
 - **TypeChain types**: `<repo>/typechain/*.ts`
-- **npm**: `@bulla/registry` ships `registry.json` (typed), the schema and ABIs (`@bulla/registry/abis/<repo>/<Name>.json`). In code, install it rather than copying addresses
+- **npm**: `@bulla/registry` ships `registry.json` (typed), the schema, ABIs (`@bulla/registry/abis/<repo>/<Name>.json`) and client logos (`@bulla/registry/<logo>`). In code, install it rather than copying addresses
 
 ## Registry Structure
 
@@ -43,6 +43,8 @@ bulla-subgraph/                  # GraphQL subgraph
   skills/
     query-claim-by-id.md         # Query a specific claim by its token ID and version from the Bulla subgraph.
     query-user-claims.md         # Query all claims (invoices and payments) associated with a wallet address via the Bulla subgraph.
+
+dist/                            # dist
 
 factoring-contracts/             # Factoring contracts
   address_config.json
@@ -100,7 +102,7 @@ registry.clients["tcs"]
 // → { "displayName": "TCS", "website": "...", "logo": "factoring-contracts/logos/tcs.png" }
 ```
 
-A relative `logo` is a path from the registry root.
+A relative `logo` is a path from the registry root, and from the npm package root.
 
 ### Perform an action
 
