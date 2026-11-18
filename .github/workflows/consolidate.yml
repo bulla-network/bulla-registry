@@ -3,6 +3,8 @@ name: Consolidate Registry
 # Source repos start this after a merge to main, with a token from the bulla-registry-notify app (Actions: write
 # on this repo only). A daily run catches any trigger that was missed. The run reads the public source repos
 # itself, and writes with a short-lived token from the bulla-registry-sync app. Neither app's key expires.
+# When what the package ships changed since the last release, it publishes @bulla/registry to npm with trusted
+# publishing (OIDC, no token): npmjs.com lists this workflow and the registry-sync environment as its publisher.
 on:
   workflow_dispatch:
     inputs:
@@ -24,6 +26,8 @@ jobs:
     runs-on: ubuntu-latest
     # The app's private key is an environment secret, readable only by workflows running on main.
     environment: registry-sync
+    permissions:
+      id-token: write # npm trusted publishing, and its provenance
 
     steps:
       - name: Triggered by
@@ -45,6 +49,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ steps.app-token.outputs.token }}
+          fetch-depth: 0 # the release tags, which the next version is measured against
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -61,6 +66,19 @@ jobs:
       - name: Consolidate registry
         run: npm run consolidate
 
+      # Compares what the package ships with the last release tag, picks major, minor or patch (see the README),
+      # and sets the version in package.json. Nothing changed since that tag: release=false. A release whose
+      # publish failed is still unreleased (no tag), so the next run picks it up again.
+      - name: Pick the release version
+        id: release
+        run: npm run release:version -- --notes "$RUNNER_TEMP/release-notes.md"
+
+      # Packs the package and uses it from ESM, CommonJS and TypeScript. Before the commit, so a package that
+      # doesn't build never reaches main.
+      - name: Test the package
+        if: steps.release.outputs.release == 'true'
+        run: npm test
+
       # A new file (e.g. a new ABI) is a change. registry.json's generatedAt changes on every run, so a diff
       # whose only changed lines are generatedAt is not: otherwise every run would commit.
       - name: Check for changes
@@ -75,13 +93,50 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          RELEASE: ${{ steps.release.outputs.release }}
+          VERSION: ${{ steps.release.outputs.version }}
         run: |
           user_id=$(gh api "/users/${APP_SLUG}[bot]" --jq .id)
           git config user.name "${APP_SLUG}[bot]"
           git config user.email "${user_id}+${APP_SLUG}[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "chore: update registry from source repos"
+          if git diff --cached --quiet -I '"generatedAt":' -- . ':!package.json' ':!package-lock.json'; then
+            echo "chore: release @bulla/registry ${VERSION}" > "$RUNNER_TEMP/commit-message"
+          else
+            echo "chore: update registry from source repos" > "$RUNNER_TEMP/commit-message"
+          fi
+          if [ "$RELEASE" = "true" ]; then
+            echo >> "$RUNNER_TEMP/commit-message"
+            cat "$RUNNER_TEMP/release-notes.md" >> "$RUNNER_TEMP/commit-message"
+          fi
+          git commit -F "$RUNNER_TEMP/commit-message"
           git push
+
+      # prepack builds dist/. The version can already be on npm if an earlier run published it but failed to tag;
+      # npm can also take a few minutes to list a version it just accepted.
+      - name: Publish to npm
+        if: steps.release.outputs.release == 'true'
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          if npm view "@bulla/registry@${VERSION}" version > /dev/null 2>&1; then
+            echo "@bulla/registry@${VERSION} is already on npm"
+          else
+            npm publish
+          fi
+
+      # The tag marks the release: the next run measures changes from it. Created after the publish, so a failed
+      # publish leaves no tag and is retried.
+      - name: Tag the release
+        if: steps.release.outputs.release == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          if ! gh release view "v${VERSION}" > /dev/null 2>&1; then
+            gh release create "v${VERSION}" --target "$(git rev-parse HEAD)" --title "v${VERSION}" \
+              --notes-file "$RUNNER_TEMP/release-notes.md"
+          fi
 
       # GitHub turns off scheduled workflows in a public repo after 60 days without activity.
       # Re-enabling the workflow through the API on every run resets that clock.
