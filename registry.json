@@ -1,12 +1,11 @@
 {
   "$schema": "./registry.schema.json",
-  "generatedAt": "2026-11-17T22:09:54.301Z",
+  "generatedAt": "2026-11-18T16:20:16.393Z",
   "networks": {
     "1": {
       "name": "Ethereum Mainnet",
       "chainId": 1,
       "slug": "mainnet",
-      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-mainnet/v2-main/gn",
       "subgraph": {
         "dev": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-mainnet/dev/gn",
         "prod": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-mainnet/prod/gn"
@@ -34,7 +33,6 @@
       "name": "Optimism",
       "chainId": 10,
       "slug": "optimism",
-      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-optimism/v2-main/gn",
       "subgraph": {
         "dev": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-optimism/dev/gn",
         "prod": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-optimism/prod/gn"
@@ -62,7 +60,6 @@
       "name": "XDC",
       "chainId": 50,
       "slug": "xdc",
-      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-xdc/v2-main/gn",
       "subgraph": {
         "dev": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-xdc/dev/gn",
         "prod": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-xdc/prod/gn"
@@ -84,7 +81,6 @@
       "name": "BNB Chain",
       "chainId": 56,
       "slug": "bnb_chain",
-      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-bnb_chain/v2-main/gn",
       "subgraph": {
         "dev": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-bnb_chain/dev/gn",
         "prod": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-bnb_chain/prod/gn"
@@ -112,7 +108,6 @@
       "name": "Gnosis Chain",
       "chainId": 100,
       "slug": "gnosis",
-      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-gnosis/v2-main/gn",
       "subgraph": {
         "dev": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-gnosis/dev/gn",
         "prod": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-gnosis/prod/gn"
@@ -140,7 +135,6 @@
       "name": "Polygon",
       "chainId": 137,
       "slug": "polygon",
-      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-polygon/v2-main/gn",
       "subgraph": {
         "dev": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-polygon/dev/gn",
         "prod": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-polygon/prod/gn"
@@ -168,7 +162,6 @@
       "name": "RedBelly",
       "chainId": 151,
       "slug": "redbelly",
-      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-redbelly/latest/gn",
       "subgraph": {
         "dev": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-redbelly/dev/gn",
         "prod": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-redbelly/prod/gn"
@@ -191,7 +184,6 @@
       "name": "Base",
       "chainId": 8453,
       "slug": "base",
-      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-base/v2-main/gn",
       "subgraph": {
         "dev": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-base/dev/gn",
         "prod": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-base/prod/gn"
@@ -222,7 +214,6 @@
       "name": "Arbitrum",
       "chainId": 42161,
       "slug": "arbitrum",
-      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-arbitrum/v2-main/gn",
       "subgraph": {
         "dev": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-arbitrum/dev/gn",
         "prod": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-arbitrum/prod/gn"
@@ -253,7 +244,6 @@
       "name": "Celo",
       "chainId": 42220,
       "slug": "celo",
-      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-celo/v2-main/gn",
       "subgraph": {
         "dev": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-celo/dev/gn",
         "prod": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-celo/prod/gn"
@@ -281,7 +271,6 @@
       "name": "Avalanche",
       "chainId": 43114,
       "slug": "avalanche",
-      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-avalanche/v2-main/gn",
       "subgraph": {
         "dev": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-avalanche/dev/gn",
         "prod": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-avalanche/prod/gn"
@@ -309,7 +298,6 @@
       "name": "Sepolia",
       "chainId": 11155111,
       "slug": "sepolia",
-      "graphql": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-sepolia/v2-main/gn",
       "subgraph": {
         "dev": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-sepolia/dev/gn",
         "prod": "https://api.goldsky.com/api/public/project_clxvwihx9eci401ud1suddgpf/subgraphs/bulla-contracts-sepolia/prod/gn"

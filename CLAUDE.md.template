@@ -38,8 +38,8 @@ registry.networks["8453"].subgraph.prod
 // → "https://api.goldsky.com/.../bulla-contracts-base/prod/gn"
 ```
 
-The endpoints are constant: they change only when a network is added. `networks[chainId].graphql` is today's
-`v2-main`/`latest` endpoint and is deprecated; it goes away once the subgraph serves the `dev` and `prod` tags.
+The endpoints are constant: they change only when a network is added. Use `dev` in development and `prod` in
+production. Don't use the older `v2-main`/`latest` tags: they serve an outdated build.
 
 ### Look up a factoring pool or client
 

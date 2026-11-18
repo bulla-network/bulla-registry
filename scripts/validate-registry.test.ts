@@ -36,7 +36,7 @@ test("a dropped required field fails", () => {
 
 test("an unknown field fails", () => {
   const r = registry();
-  r.networks["1"].graphqlEndpoint = r.networks["1"].graphql;
+  r.networks["1"].graphql = r.networks["1"].subgraph.prod;
   assertFails(r, /must NOT have additional properties/);
 });
 

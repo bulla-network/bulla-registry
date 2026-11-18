@@ -44,15 +44,11 @@
     "network": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name", "chainId", "slug", "graphql", "subgraph", "contracts"],
+      "required": ["name", "chainId", "slug", "subgraph", "contracts"],
       "properties": {
         "name": { "type": "string", "minLength": 1, "not": { "pattern": "^Unknown" } },
         "chainId": { "type": "integer", "minimum": 1 },
         "slug": { "$ref": "#/definitions/slug" },
-        "graphql": {
-          "$ref": "#/definitions/url",
-          "description": "Deprecated: the subgraph endpoint on today's v2-main/latest tag. It goes away once the dev and prod tags exist; use subgraph.prod or subgraph.dev instead."
-        },
         "subgraph": { "$ref": "#/definitions/subgraphEndpoints" },
         "contracts": {
           "type": "object",
@@ -71,7 +67,7 @@
 
     "subgraphEndpoints": {
       "type": "object",
-      "description": "One endpoint per Goldsky tag. They are constant (the network slug plus a fixed tag) and change only when a network is added; which build a tag serves is set by tagging in the subgraph repo.",
+      "description": "One endpoint per Goldsky tag: dev for the dev stage, prod for production. They are constant (the network slug plus a fixed tag) and change only when a network is added; which build a tag serves is set by tagging in the subgraph repo.",
       "additionalProperties": false,
       "required": ["dev", "prod"],
       "properties": {

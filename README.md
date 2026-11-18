@@ -6,7 +6,7 @@ Auto-generated registry of Bulla protocol contract addresses, subgraph endpoints
 
 Use `registry.json` — it contains all contract addresses, subgraph endpoints, factoring pools and their clients, consolidated from source repos. Do not hardcode addresses or subgraph URLs elsewhere.
 
-`registry.schema.json` is its shape, and the contract with every consumer. Each network has one subgraph endpoint per Goldsky tag (`networks[chainId].subgraph.dev` and `.prod`). These are constant and change only when a network is added. `networks[chainId].graphql` is deprecated: it points at today's `v2-main`/`latest` tag and goes away once the subgraph serves `dev` and `prod`.
+`registry.schema.json` is its shape, and the contract with every consumer. Each network has one subgraph endpoint per Goldsky tag (`networks[chainId].subgraph.dev` and `.prod`). These are constant and change only when a network is added. Use `dev` in development and `prod` in production. There is no single `graphql` endpoint: the old `v2-main`/`latest` tags serve an outdated build.
 
 ## For AI agents
 

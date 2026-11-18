@@ -59,7 +59,6 @@ interface NetworkEntry {
   name: string;
   chainId: number;
   slug: string;
-  graphql: string | null;
   subgraph: { dev: string; prod: string };
   contracts: Record<string, Record<string, string>>;
 }
@@ -94,14 +93,16 @@ function consolidate(): void {
       name,
       chainId: Number(chainId),
       slug,
-      graphql: null,
       subgraph: { dev: subgraphEndpoint(slug, "dev"), prod: subgraphEndpoint(slug, "prod") },
       contracts: {},
     };
   }
 
-  // GraphQL endpoints (the legacy single endpoint per network)
+  // The subgraph export lists which networks have a subgraph. Its URLs aren't copied (they use the retired
+  // v2-main/latest tags); each network's dev and prod endpoints are built above from its slug. The export only
+  // has to agree: every network listed, under bulla-contracts-<slug>.
   const graphqlConfig = loadJSON<GraphQLConfig>(join(ROOT, GRAPHQL_SOURCE, "address_config.json"));
+  const withSubgraph = new Set<string>();
   for (const [chainId, url] of Object.entries(graphqlConfig?.endpoints ?? {})) {
     const network = networks[chainId];
     if (!network) {
@@ -112,12 +113,10 @@ function consolidate(): void {
     if (!url.startsWith(expected)) {
       errors.push(`${GRAPHQL_SOURCE}'s endpoint for ${chainId} (${url}) doesn't start with ${expected}`);
     }
-    network.graphql = url;
+    withSubgraph.add(chainId);
   }
-  // graphql is taken as the subgraph exports it, never built here: the export decides which tag each network
-  // uses (v2-main, or latest on RedBelly). A network it doesn't list fails the run.
   for (const network of Object.values(networks)) {
-    if (!network.graphql) {
+    if (!withSubgraph.has(String(network.chainId))) {
       errors.push(`${GRAPHQL_SOURCE} has no endpoint for ${network.name} (${network.chainId})`);
     }
   }
