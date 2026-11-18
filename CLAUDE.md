@@ -44,8 +44,6 @@ bulla-subgraph/                  # GraphQL subgraph
     query-claim-by-id.md         # Query a specific claim by its token ID and version from the Bulla subgraph.
     query-user-claims.md         # Query all claims (invoices and payments) associated with a wallet address via the Bulla subgraph.
 
-dist/                            # dist
-
 factoring-contracts/             # Factoring contracts
   address_config.json
   abis/                          # BullaFactoringV1, BullaFactoringV2_1, BullaFactoringV2_2, RedemptionQueue

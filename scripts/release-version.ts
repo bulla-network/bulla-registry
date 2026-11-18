@@ -220,7 +220,7 @@ export function filesOnDisk(root: string = ROOT): Map<string, Buffer> {
   const files = new Map<string, Buffer>();
   for (const top of readdirSync(root)) {
     const full = join(root, top);
-    if (top === "node_modules" || top.startsWith(".")) continue;
+    if (top === "dist" || top === "node_modules" || top.startsWith(".")) continue;
     if (!statSync(full).isDirectory()) {
       if (isPackageFile(top)) files.set(top, readFileSync(full));
       continue;

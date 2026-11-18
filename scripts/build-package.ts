@@ -65,7 +65,7 @@ export function writeAbis(root: string, out: string): string[] {
   const written: string[] = [];
   for (const repo of readdirSync(root)) {
     const dir = join(root, repo, "abis");
-    if (repo === "node_modules" || repo.startsWith(".") || !statSync(join(root, repo)).isDirectory() || !existsSync(dir)) continue;
+    if (repo === "dist" || repo === "node_modules" || repo.startsWith(".") || !statSync(join(root, repo)).isDirectory() || !existsSync(dir)) continue;
     for (const name of readdirSync(dir).filter((f) => f.endsWith(".json"))) {
       const artifact = JSON.parse(readFileSync(join(dir, name), "utf-8"));
       const abi = Array.isArray(artifact) ? artifact : artifact.abi;
