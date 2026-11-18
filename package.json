@@ -1,20 +1,57 @@
 {
-  "name": "bulla-registry",
-  "private": true,
+  "name": "@bulla/registry",
+  "version": "1.0.0",
+  "description": "Bulla protocol contract addresses, subgraph endpoints, factoring pools and clients, ABIs and client logos, with TypeScript types",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bulla-network/bulla-registry.git"
+  },
+  "homepage": "https://github.com/bulla-network/bulla-registry#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json",
+    "./*": "./*"
+  },
+  "files": [
+    "dist",
+    "registry.json",
+    "registry.schema.json",
+    "*/abis/*.json",
+    "*/logos/*"
+  ],
+  "sideEffects": false,
   "scripts": {
     "consolidate": "tsx scripts/consolidate.ts",
     "pull": "bash scripts/pull-and-copy.sh",
     "pull:local": "bash scripts/pull-and-copy.sh --local",
     "validate": "tsx scripts/validate-registry.ts",
-    "test": "tsx --test scripts/*.test.ts"
-  },
-  "dependencies": {
-    "ajv": "^8.20.0",
-    "ajv-formats": "^3.0.1",
-    "tsx": "^4.7.0"
+    "test": "tsx --test scripts/*.test.ts",
+    "build": "tsx scripts/build-package.ts",
+    "release:version": "tsx scripts/release-version.ts",
+    "prepack": "npm run build"
   },
   "devDependencies": {
-    "@types/node": "^25.3.0"
+    "@types/node": "^25.3.0",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "json-schema-to-typescript": "^15.0.4",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
   }
 }

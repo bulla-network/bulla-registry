@@ -8,6 +8,38 @@ Use `registry.json` — it contains all contract addresses, subgraph endpoints, 
 
 `registry.schema.json` is its shape, and the contract with every consumer. Each network has one subgraph endpoint per Goldsky tag (`networks[chainId].subgraph.dev` and `.prod`). These are constant and change only when a network is added. Use `dev` in development and `prod` in production. There is no single `graphql` endpoint: the old `v2-main`/`latest` tags serve an outdated build.
 
+## npm package
+
+`@bulla/registry` ships `registry.json`, `registry.schema.json`, the ABIs and the client logos, with TypeScript types generated from the schema.
+
+```bash
+npm install @bulla/registry
+```
+
+```ts
+import { registry, type Pool, type Address } from "@bulla/registry"; // or require("@bulla/registry")
+
+const invoice: Address | undefined = registry.networks["1"]?.contracts["bulla-contracts-v2"]?.bullaInvoice;
+const active: Pool[] = registry.pools.filter((p) => p.chainId === 42161 && p.category === "active");
+```
+
+The JSON files are importable by their path in this repo, e.g. `@bulla/registry/registry.json`, `@bulla/registry/bulla-contracts-v2/abis/BullaInvoice.json`, or a client's `logo` (`@bulla/registry/factoring-contracts/logos/tcs.png`). Addresses are typed `` `0x${string}` ``, viem's `Address`.
+
+### Versions
+
+The Consolidate Registry workflow releases a new version when what the package ships changed since the last release (the highest `v*` tag). A run that changes nothing publishes nothing. `scripts/release-version.ts` picks the bump:
+
+| Change | Bump |
+|--------|------|
+| A removed or renamed field, a field that is no longer required, or a removed enum value (`registry.schema.json`) | **major** |
+| A removed network, contract, pool, client, ABI, ABI function/event/error, or logo | **major** |
+| A new field or enum value, or a new network, contract, pool, client, ABI, ABI function/event/error, or logo | **minor** |
+| A changed address, endpoint or other value; any other change (bytecode, descriptions) | **patch** |
+
+A rename is a removal plus an addition, so it is major. `generatedAt` is ignored.
+
+The workflow sets the version in `package.json`, commits it as bulla-registry-sync, publishes with npm trusted publishing (OIDC, no token), then tags the release (`v1.2.3`) with a GitHub release listing the changes. A change merged by hand (e.g. a schema change) is released by the next run, daily at the latest. To force a bigger bump, set a higher version in `package.json` in the PR. npm can take a few minutes after a publish to list the new version.
+
 ## For AI agents
 
 See `CLAUDE.md` — it serves as the entry point for agent discovery. Skill files in `<repo>/skills/*.md` describe how to perform on-chain actions step by step.
@@ -37,5 +69,7 @@ npm install
 npm run pull:local     # Copy from sibling workspace directories
 npm run consolidate    # Generate registry.json + CLAUDE.md, checked against registry.schema.json
 npm run validate       # Check the committed registry.json against the schema
-npm test               # Tests for the checks
+npm test               # Tests for the checks, the version rules and the packed package
+npm run build          # Build dist/ (the package's JS and types); npm pack runs it
+npm run release:version  # Pick the next version from the changes since the last release tag
 ```
