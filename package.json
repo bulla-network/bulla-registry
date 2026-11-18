@@ -5,9 +5,13 @@
   "scripts": {
     "consolidate": "tsx scripts/consolidate.ts",
     "pull": "bash scripts/pull-and-copy.sh",
-    "pull:local": "bash scripts/pull-and-copy.sh --local"
+    "pull:local": "bash scripts/pull-and-copy.sh --local",
+    "validate": "tsx scripts/validate-registry.ts",
+    "test": "tsx --test scripts/*.test.ts"
   },
   "dependencies": {
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "tsx": "^4.7.0"
   },
   "devDependencies": {

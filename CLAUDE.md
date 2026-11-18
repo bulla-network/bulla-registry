@@ -1,10 +1,10 @@
 # Bulla Registry
 
-Central registry for Bulla protocol contract addresses, GraphQL endpoints, ABIs, TypeChain types, and agent skills.
+Central registry for Bulla protocol contract addresses, subgraph endpoints, factoring pools, ABIs, TypeChain types, and agent skills.
 
 ## Quick Start
 
-- **Contract addresses & GraphQL endpoints**: `registry.json`
+- **Contract addresses, subgraph endpoints, factoring pools & clients**: `registry.json` (shape: `registry.schema.json`)
 - **Skills** (agent instructions): `<repo>/skills/*.md`
 - **ABIs**: `<repo>/abis/*.json`
 - **TypeChain types**: `<repo>/typechain/*.ts`
@@ -12,7 +12,8 @@ Central registry for Bulla protocol contract addresses, GraphQL endpoints, ABIs,
 ## Registry Structure
 
 ```
-registry.json                    # All addresses + GraphQL endpoints (generated)
+registry.json                    # Addresses, subgraph endpoints, factoring pools and clients (generated)
+registry.schema.json             # JSON Schema registry.json is checked against
 
 bulla-backend/                   # Backend API (private repo, manually maintained)
   skills/
@@ -52,20 +53,20 @@ factoring-contracts/             # Factoring contracts
 
 ## Networks
 
-| Chain ID | Name | V1 | V2 | Factoring | Subgraph |
-|----------|------|----|----|-----------|----------|
-| 1 | Ethereum Mainnet | yes | yes | no | yes |
-| 10 | Optimism | yes | yes | no | yes |
-| 50 | Unknown (50) | yes | yes | no | no |
-| 56 | BNB Chain | yes | yes | no | yes |
-| 100 | Gnosis Chain | yes | yes | no | yes |
-| 137 | Polygon | yes | yes | no | yes |
-| 151 | RedBelly | yes | no | yes | yes |
-| 8453 | Base | yes | yes | yes | yes |
-| 42161 | Arbitrum | yes | yes | yes | yes |
-| 42220 | Celo | yes | yes | no | yes |
-| 43114 | Avalanche | yes | yes | no | yes |
-| 11155111 | Sepolia | yes | yes | yes | yes |
+| Chain ID | Name | Slug | V1 | V2 | Factoring | Pools (active / all) |
+|----------|------|------|----|----|-----------|----------------------|
+| 1 | Ethereum Mainnet | mainnet | yes | yes | no | 0 / 2 |
+| 10 | Optimism | optimism | yes | yes | no | - |
+| 50 | XDC | xdc | yes | yes | no | 1 / 1 |
+| 56 | BNB Chain | bnb_chain | yes | yes | no | - |
+| 100 | Gnosis Chain | gnosis | yes | yes | no | - |
+| 137 | Polygon | polygon | yes | yes | no | 0 / 2 |
+| 151 | RedBelly | redbelly | yes | no | yes | 0 / 1 |
+| 8453 | Base | base | yes | yes | yes | 0 / 2 |
+| 42161 | Arbitrum | arbitrum | yes | yes | yes | 2 / 5 |
+| 42220 | Celo | celo | yes | yes | no | - |
+| 43114 | Avalanche | avalanche | yes | yes | no | - |
+| 11155111 | Sepolia | sepolia | yes | yes | yes | 3 / 13 |
 
 ## How to Use
 
@@ -78,13 +79,27 @@ registry.networks["1"].contracts["bulla-contracts-v2"].bullaInvoice
 // → "0xfe2631bcb3e622750b6fbb605a416173ffa3a770"
 ```
 
-### Look up a GraphQL endpoint
+### Look up a subgraph endpoint
 
 ```json
-// registry.json → networks[chainId].graphql
-registry.networks["8453"].graphql
-// → "https://api.goldsky.com/.../bulla-contracts-base/v2-main/gn"
+// registry.json → networks[chainId].subgraph[tag], one endpoint per Goldsky tag (dev, prod)
+registry.networks["8453"].subgraph.prod
+// → "https://api.goldsky.com/.../bulla-contracts-base/prod/gn"
 ```
+
+The endpoints are constant: they change only when a network is added. Use `dev` in development and `prod` in
+production. Don't use the older `v2-main`/`latest` tags: they serve an outdated build.
+
+### Look up a factoring pool or client
+
+```json
+// registry.json → pools[] (every pool on every chain, archived ones included) and clients[clientKey]
+registry.pools.filter(p => p.chainId === 42161 && p.category === "active")
+registry.clients["tcs"]
+// → { "displayName": "TCS", "website": "...", "logo": "factoring-contracts/logos/tcs.png" }
+```
+
+A relative `logo` is a path from the registry root.
 
 ### Perform an action
 
@@ -102,7 +117,7 @@ This registry is updated by the Consolidate Registry workflow (started by each s
 ```bash
 npm install
 npm run pull           # Fetch from GitHub (or npm run pull:local for local workspaces)
-npm run consolidate    # Generate registry.json + CLAUDE.md
+npm run consolidate    # Generate registry.json + CLAUDE.md, checked against registry.schema.json
 ```
 
 ## Source Repos
@@ -111,8 +126,8 @@ npm run consolidate    # Generate registry.json + CLAUDE.md
 |------|------------------|
 | [bulla-contracts](https://github.com/bulla-network/bulla-contracts) | V1 contract addresses, ABIs, skills |
 | [bulla-contracts-v2](https://github.com/bulla-network/bulla-contracts-v2) | V2 contract addresses, ABIs, TypeChain, skills |
-| [bulla-subgraph](https://github.com/bulla-network/bulla-subgraph) | GraphQL endpoints, query skills |
-| [factoring-contracts](https://github.com/bulla-network/factoring-contracts) | Factoring contract addresses, ABIs, skills |
+| [bulla-subgraph](https://github.com/bulla-network/bulla-network-subgraph) | GraphQL endpoints, query skills |
+| [factoring-contracts](https://github.com/bulla-network/factoring-contracts) | Factoring contract addresses, pools and clients (`pools.json`), client logos, ABIs, skills |
 | bulla-backend (private) | Authentication skill (manually maintained) |
 
 Each source repo exports data in a `bulla_registry_export/` directory. The CI pipeline pulls these exports and consolidates them into `registry.json`.
