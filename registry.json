@@ -1,6 +1,6 @@
 {
   "$schema": "./registry.schema.json",
-  "generatedAt": "2026-11-18T16:20:16.393Z",
+  "generatedAt": "2026-11-19T16:57:41.433Z",
   "networks": {
     "1": {
       "name": "Ethereum Mainnet",
@@ -391,7 +391,7 @@
       "version": "V2_2",
       "client": "fundora",
       "poolKey": "fundora",
-      "displayName": "Test Pool V2.1",
+      "displayName": "Test Pool V2.2",
       "category": "archived",
       "shareToken": {
         "symbol": "BFT-V2_1",
