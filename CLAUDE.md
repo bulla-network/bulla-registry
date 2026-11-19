@@ -8,6 +8,7 @@ Central registry for Bulla protocol contract addresses, subgraph endpoints, fact
 - **Skills** (agent instructions): `<repo>/skills/*.md`
 - **ABIs**: `<repo>/abis/*.json`
 - **TypeChain types**: `<repo>/typechain/*.ts`
+- **npm**: `@bulla/registry` ships `registry.json` (typed), the schema, ABIs (`@bulla/registry/abis/<repo>/<Name>.json`) and client logos (`@bulla/registry/<logo>`). In code, install it rather than copying addresses
 
 ## Registry Structure
 
@@ -99,7 +100,7 @@ registry.clients["tcs"]
 // → { "displayName": "TCS", "website": "...", "logo": "factoring-contracts/logos/tcs.png" }
 ```
 
-A relative `logo` is a path from the registry root.
+A relative `logo` is a path from the registry root, and from the npm package root.
 
 ### Perform an action
 
@@ -119,6 +120,8 @@ npm install
 npm run pull           # Fetch from GitHub (or npm run pull:local for local workspaces)
 npm run consolidate    # Generate registry.json + CLAUDE.md, checked against registry.schema.json
 ```
+
+When what the package ships changed since the last release, the same workflow publishes a new `@bulla/registry` version to npm. The README lists the version rules.
 
 ## Source Repos
 

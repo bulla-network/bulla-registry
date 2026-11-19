@@ -207,8 +207,10 @@ function buildRegistryStructure(): string {
   lines.push("registry.json                    # Addresses, subgraph endpoints, factoring pools and clients (generated)");
   lines.push("registry.schema.json             # JSON Schema registry.json is checked against");
 
+  // dist/ is the npm package's build output (it has an abis/ too), not a source repo.
   const repoDirs = readdirSync(ROOT)
     .filter((d) => {
+      if (d === "dist" || d === "node_modules" || d.startsWith(".")) return false;
       const full = join(ROOT, d);
       return (
         existsSync(join(full, "skills")) ||
