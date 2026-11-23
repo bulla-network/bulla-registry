@@ -52,6 +52,18 @@ test("an unnamed network fails", () => {
   assertFails(r, /\/networks\/50\/name/);
 });
 
+test("a pool's category is active, test, archived or hidden", () => {
+  for (const category of ["active", "test", "archived", "hidden"]) {
+    const r = registry();
+    r.pools[0].category = category;
+    assert.deepEqual(validateRegistry(r), [], category);
+  }
+
+  const r = registry();
+  r.pools[0].category = "paused";
+  assertFails(r, /\/pools\/0\/category must be equal to one of the allowed values/);
+});
+
 test("a network with no contracts fails", () => {
   const r = registry();
   r.networks["1"].contracts = {};

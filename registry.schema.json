@@ -93,8 +93,8 @@
 
     "category": {
       "type": "string",
-      "description": "active: live, including test pools. archived: no longer in use but still resolves, e.g. a pool superseded by a redeploy.",
-      "enum": ["active", "archived"]
+      "description": "Where the app lists the pool. active: live. test: a test pool, on the Test tab. archived: no longer in use but still resolves. hidden: on no tab, and its details page shows nothing of it, e.g. a pool superseded by a redeploy.",
+      "enum": ["active", "test", "archived", "hidden"]
     },
     "shareToken": {
       "type": "object",
