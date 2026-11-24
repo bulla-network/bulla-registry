@@ -58,7 +58,7 @@ factoring-contracts/             # Factoring contracts
 |----------|------|------|----|----|-----------|----------------------|
 | 1 | Ethereum Mainnet | mainnet | yes | yes | no | 0 / 2 |
 | 10 | Optimism | optimism | yes | yes | no | - |
-| 50 | XDC | xdc | yes | yes | no | 1 / 1 |
+| 50 | XDC | xdc | yes | yes | no | 0 / 1 |
 | 56 | BNB Chain | bnb_chain | yes | yes | no | - |
 | 100 | Gnosis Chain | gnosis | yes | yes | no | - |
 | 137 | Polygon | polygon | yes | yes | no | 0 / 2 |
@@ -67,7 +67,7 @@ factoring-contracts/             # Factoring contracts
 | 42161 | Arbitrum | arbitrum | yes | yes | yes | 2 / 5 |
 | 42220 | Celo | celo | yes | yes | no | - |
 | 43114 | Avalanche | avalanche | yes | yes | no | - |
-| 11155111 | Sepolia | sepolia | yes | yes | yes | 3 / 13 |
+| 11155111 | Sepolia | sepolia | yes | yes | yes | 0 / 13 |
 
 ## How to Use
 
