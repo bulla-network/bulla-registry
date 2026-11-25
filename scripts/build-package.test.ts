@@ -44,18 +44,23 @@ test("the packed package works from ESM, CommonJS and TypeScript", { timeout: 12
 
   writeFileSync(
     join(app, "esm.mts"),
-    `import registry, { registry as named, type Address, type Pool } from "@bulla/registry";
+    `import registry, { registry as named, type Address, type Pool, type Token } from "@bulla/registry";
 import schema from "@bulla/registry/registry.schema.json" with { type: "json" };
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const invoice: Address | undefined = registry.networks["1"]?.contracts["bulla-contracts-v2"]?.bullaInvoice;
 const active: Pool[] = named.pools.filter((p) => p.category === "active");
 const abi: unknown = require("@bulla/registry/abis/bulla-contracts-v2/BullaInvoice.json");
+// The wrapped native token and USDC are a Token or null; the native currency is always there.
+const usdc: Token | null | undefined = registry.networks["1"]?.usdc;
+const usdcDecimals: number | undefined = usdc?.decimals;
+const native: string | undefined = registry.networks["42220"]?.nativeCurrency.symbol;
+const wrapped: Address | undefined = registry.networks["1"]?.wrappedNativeToken?.address;
 // A relative logo is a path from the package root.
 const logos: string[] = Object.values(registry.clients)
   .flatMap((c) => (c.logo && !c.logo.startsWith("https://") ? [c.logo] : []))
   .map((logo) => require.resolve(\`@bulla/registry/\${logo}\`));
-console.log(JSON.stringify({ invoice, active: active.length, same: registry === named, title: schema.title, abi, logos, registry }));
+console.log(JSON.stringify({ invoice, usdcDecimals, native, wrapped, active: active.length, same: registry === named, title: schema.title, abi, logos, registry }));
 `,
   );
   writeFileSync(
@@ -77,6 +82,9 @@ console.log(JSON.stringify({ prod, same: reg.default === reg.registry }));
 
   const esm = JSON.parse(run(process.execPath, ["out/esm.mjs"], app));
   assert.equal(esm.invoice, committed.networks["1"].contracts["bulla-contracts-v2"].bullaInvoice);
+  assert.equal(esm.usdcDecimals, committed.networks["1"].usdc.decimals);
+  assert.equal(esm.native, "CELO");
+  assert.equal(esm.wrapped, committed.networks["1"].wrappedNativeToken.address);
   assert.equal(esm.same, true);
   assert.equal(esm.title, "Bulla registry");
   assert.deepEqual(esm.registry, committed);

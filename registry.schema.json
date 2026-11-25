@@ -44,12 +44,21 @@
     "network": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name", "chainId", "slug", "subgraph", "contracts"],
+      "required": ["name", "chainId", "slug", "subgraph", "nativeCurrency", "wrappedNativeToken", "usdc", "contracts"],
       "properties": {
         "name": { "type": "string", "minLength": 1, "not": { "pattern": "^Unknown" } },
         "chainId": { "type": "integer", "minimum": 1 },
         "slug": { "$ref": "#/definitions/slug" },
         "subgraph": { "$ref": "#/definitions/subgraphEndpoints" },
+        "nativeCurrency": { "$ref": "#/definitions/nativeCurrency" },
+        "wrappedNativeToken": {
+          "description": "The ERC-20 that wraps the native currency 1:1 (WETH on Ethereum). null where there is none: on Celo, CELO is itself an ERC-20.",
+          "anyOf": [{ "$ref": "#/definitions/token" }, { "type": "null" }]
+        },
+        "usdc": {
+          "description": "The USDC Bulla uses on this network, native or bridged (its symbol says which, e.g. USDC.e). null where Bulla uses none.",
+          "anyOf": [{ "$ref": "#/definitions/token" }, { "type": "null" }]
+        },
         "contracts": {
           "type": "object",
           "description": "Keyed by source repo, then contract name.",
@@ -73,6 +82,28 @@
       "properties": {
         "dev": { "$ref": "#/definitions/url" },
         "prod": { "$ref": "#/definitions/url" }
+      }
+    },
+
+    "nativeCurrency": {
+      "type": "object",
+      "description": "The network's own currency, which pays for gas and has no contract (Bulla uses the zero address for it).",
+      "additionalProperties": false,
+      "required": ["symbol", "decimals"],
+      "properties": {
+        "symbol": { "type": "string", "minLength": 1 },
+        "decimals": { "type": "integer", "minimum": 0, "maximum": 36 }
+      }
+    },
+    "token": {
+      "type": "object",
+      "description": "An ERC-20 token. symbol and decimals are what the contract returns.",
+      "additionalProperties": false,
+      "required": ["address", "symbol", "decimals"],
+      "properties": {
+        "address": { "$ref": "#/definitions/address" },
+        "symbol": { "type": "string", "minLength": 1 },
+        "decimals": { "type": "integer", "minimum": 0, "maximum": 36 }
       }
     },
 

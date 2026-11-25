@@ -34,6 +34,40 @@ test("a dropped required field fails", () => {
   assertFails(r3, /must have required property 'clients'/);
 });
 
+test("a network without its native currency, wrapped native token or USDC fails", () => {
+  for (const field of ["nativeCurrency", "wrappedNativeToken", "usdc"]) {
+    const r = registry();
+    delete r.networks["1"][field];
+    assertFails(r, new RegExp(`must have required property '${field}'`));
+  }
+});
+
+test("a network's wrapped native token and USDC are a token or null", () => {
+  const r = registry();
+  r.networks["1"].usdc = null;
+  r.networks["1"].wrappedNativeToken = null;
+  assert.deepEqual(validateRegistry(r), []);
+
+  const r2 = registry();
+  delete r2.networks["1"].usdc.decimals;
+  assertFails(r2, /\/networks\/1\/usdc must have required property 'decimals'/);
+
+  const r3 = registry();
+  r3.networks["1"].wrappedNativeToken.address = "0x1234";
+  assertFails(r3, /\/networks\/1\/wrappedNativeToken\/address must match pattern/);
+});
+
+test("a pool whose asset is the network's USDC must agree on its symbol and decimals", () => {
+  const r = registry();
+  const i = r.pools.findIndex(
+    (p: { chainId: number; asset: { address: string } }) =>
+      p.asset.address.toLowerCase() === r.networks[String(p.chainId)].usdc?.address.toLowerCase()
+  );
+  assert.ok(i >= 0, "some pool takes the network's USDC");
+  r.networks[String(r.pools[i].chainId)].usdc.decimals = 18;
+  assertFails(r, new RegExp(`/pools/${i} .*doesn't match chain .*'s usdc USDC`));
+});
+
 test("an unknown field fails", () => {
   const r = registry();
   r.networks["1"].graphql = r.networks["1"].subgraph.prod;

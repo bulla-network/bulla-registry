@@ -11,16 +11,23 @@ export const SCHEMA_PATH = join(ROOT, "registry.schema.json");
 const addFormats = ((addFormatsModule as unknown as { default?: unknown }).default ??
   addFormatsModule) as unknown as (ajv: Ajv) => Ajv;
 
+interface Token {
+  address: string;
+  symbol: string;
+  decimals: number;
+}
+
 interface Pool {
   chainId: number;
   network: string;
   address: string;
   client: string;
   supersededBy?: string;
+  asset: Token;
 }
 
 interface RegistryLike {
-  networks: Record<string, { chainId: number; slug: string }>;
+  networks: Record<string, { chainId: number; slug: string; wrappedNativeToken: Token | null; usdc: Token | null }>;
   clients: Record<string, { logo?: string }>;
   pools: Pool[];
 }
@@ -75,6 +82,17 @@ export function validateRegistry(registry: unknown, root: string = ROOT): string
       errors.push(`${at}: chainId ${p.chainId} is not in networks`);
     } else if (network.slug !== p.network) {
       errors.push(`${at}: network ${p.network} doesn't match chain ${p.chainId}'s slug ${network.slug}`);
+    }
+    // The network's tokens are written by hand in consolidate.ts, the pool's asset comes from pools.json.
+    for (const field of ["usdc", "wrappedNativeToken"] as const) {
+      const token = network?.[field];
+      if (!token || token.address.toLowerCase() !== p.asset.address.toLowerCase()) continue;
+      if (token.symbol !== p.asset.symbol || token.decimals !== p.asset.decimals) {
+        errors.push(
+          `${at}: asset ${p.asset.symbol} (${p.asset.decimals} decimals) doesn't match chain ${p.chainId}'s ` +
+            `${field} ${token.symbol} (${token.decimals} decimals)`
+        );
+      }
     }
     if (!r.clients[p.client]) {
       errors.push(`${at}: client ${p.client} is not in clients`);
