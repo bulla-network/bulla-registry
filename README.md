@@ -44,6 +44,8 @@ A rename is a removal plus an addition, so it is major. `generatedAt` is ignored
 
 The workflow sets the version in `package.json`, commits it as bulla-registry-sync, publishes with npm trusted publishing (OIDC, no token), then tags the release (`v1.2.3`) with a GitHub release listing the changes. A change merged by hand (e.g. a schema change) is released by the next run, daily at the latest. To force a bigger bump, set a higher version in `package.json` in the PR. npm can take a few minutes after a publish to list the new version.
 
+After a release, the same run starts `registry-bump.yml` in each consumer, passing the new version: bulla-cli (`main`), bulla-backend (`dev`) and bulla-network (`dev`). Each consumer moves itself to that version, runs its checks and commits as releasebot-bulla. The dispatch uses a token from the bulla-registry-notify app (Actions: write), scoped to one consumer at a time. A consumer without a `registry-bump.yml` gets a warning, not a failure. To add a consumer, give it a `registry-bump.yml` with a `version` input, install bulla-registry-notify on it, and add it to the `notify-consumers` matrix in `.github/workflows/consolidate.yml`.
+
 ## For AI agents
 
 See `CLAUDE.md` — it serves as the entry point for agent discovery. Skill files in `<repo>/skills/*.md` describe how to perform on-chain actions step by step.
