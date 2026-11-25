@@ -43,6 +43,7 @@
 
     "network": {
       "type": "object",
+      "description": "wrappedNativeToken is the ERC-20 that wraps the native currency 1:1 (WETH on Ethereum), or the native currency's own ERC-20 where it is one (CELO on Celo). usdc is Circle's native USDC, or the official bridged USDC where there is none (its symbol says which, e.g. USDC.e).",
       "additionalProperties": false,
       "required": ["name", "chainId", "slug", "subgraph", "nativeCurrency", "wrappedNativeToken", "usdc", "contracts"],
       "properties": {
@@ -51,14 +52,8 @@
         "slug": { "$ref": "#/definitions/slug" },
         "subgraph": { "$ref": "#/definitions/subgraphEndpoints" },
         "nativeCurrency": { "$ref": "#/definitions/nativeCurrency" },
-        "wrappedNativeToken": {
-          "description": "The ERC-20 that wraps the native currency 1:1 (WETH on Ethereum). null where there is none: on Celo, CELO is itself an ERC-20.",
-          "anyOf": [{ "$ref": "#/definitions/token" }, { "type": "null" }]
-        },
-        "usdc": {
-          "description": "The USDC Bulla uses on this network, native or bridged (its symbol says which, e.g. USDC.e). null where Bulla uses none.",
-          "anyOf": [{ "$ref": "#/definitions/token" }, { "type": "null" }]
-        },
+        "wrappedNativeToken": { "$ref": "#/definitions/token" },
+        "usdc": { "$ref": "#/definitions/token" },
         "contracts": {
           "type": "object",
           "description": "Keyed by source repo, then contract name.",

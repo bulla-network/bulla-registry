@@ -42,11 +42,12 @@ test("a network without its native currency, wrapped native token or USDC fails"
   }
 });
 
-test("a network's wrapped native token and USDC are a token or null", () => {
-  const r = registry();
-  r.networks["1"].usdc = null;
-  r.networks["1"].wrappedNativeToken = null;
-  assert.deepEqual(validateRegistry(r), []);
+test("a network's wrapped native token and USDC are tokens, never null", () => {
+  for (const field of ["wrappedNativeToken", "usdc"]) {
+    const r = registry();
+    r.networks["1"][field] = null;
+    assertFails(r, new RegExp(`/networks/1/${field} must be object`));
+  }
 
   const r2 = registry();
   delete r2.networks["1"].usdc.decimals;

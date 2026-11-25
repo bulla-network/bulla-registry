@@ -6,7 +6,7 @@ Auto-generated registry of Bulla protocol contract addresses, subgraph endpoints
 
 Use `registry.json` — it contains all contract addresses, subgraph endpoints, factoring pools and their clients, consolidated from source repos. Do not hardcode addresses or subgraph URLs elsewhere.
 
-`registry.schema.json` is its shape, and the contract with every consumer. Each network also has its `nativeCurrency` (symbol and decimals), its `wrappedNativeToken` and the `usdc` Bulla uses there (address, symbol and decimals, or `null` where there is none). Each network has one subgraph endpoint per Goldsky tag (`networks[chainId].subgraph.dev` and `.prod`). These are constant and change only when a network is added. Use `dev` in development and `prod` in production. There is no single `graphql` endpoint: the old `v2-main`/`latest` tags serve an outdated build.
+`registry.schema.json` is its shape, and the contract with every consumer. Each network also has its `nativeCurrency` (symbol and decimals), its `wrappedNativeToken` (the native currency's own ERC-20 where it is one, e.g. CELO) and its `usdc` (Circle's native USDC, or the official bridged one), each an address, symbol and decimals. Each network has one subgraph endpoint per Goldsky tag (`networks[chainId].subgraph.dev` and `.prod`). These are constant and change only when a network is added. Use `dev` in development and `prod` in production. There is no single `graphql` endpoint: the old `v2-main`/`latest` tags serve an outdated build.
 
 ## npm package
 
@@ -60,7 +60,7 @@ Each source repo (`bulla-contracts-V2`, `bulla-network-subgraph`, `factoring-con
 
 The `validate registry` PR check runs the same consolidation, so a PR that breaks the shape fails too.
 
-A chain ID a source exports must be listed in `NETWORKS` in `scripts/consolidate.ts`, with its name, its slug (its name in the subgraph, `bulla-contracts-<slug>`, and in `pools.json`), its native currency, and its wrapped native token and USDC (or `null`); otherwise consolidation fails. These are written by hand there, not pulled from a source repo: take each token's symbol and decimals from the contract.
+A chain ID a source exports must be listed in `NETWORKS` in `scripts/consolidate.ts`, with its name, its slug (its name in the subgraph, `bulla-contracts-<slug>`, and in `pools.json`), its native currency, its wrapped native token and its USDC; otherwise consolidation fails. These are written by hand there, not pulled from a source repo: take each token's symbol and decimals from the contract.
 
 ### Changing the shape
 

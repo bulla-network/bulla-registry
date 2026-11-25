@@ -65,7 +65,7 @@ factoring-contracts/             # Factoring contracts
 | 151 | RedBelly | redbelly | RBNT | WRBNT | USDC.e | yes | no | yes | 0 / 1 |
 | 8453 | Base | base | ETH | WETH | USDC | yes | yes | yes | 0 / 2 |
 | 42161 | Arbitrum | arbitrum | ETH | WETH | USDC | yes | yes | yes | 2 / 5 |
-| 42220 | Celo | celo | CELO | - | - | yes | yes | no | - |
+| 42220 | Celo | celo | CELO | CELO | USDC | yes | yes | no | - |
 | 43114 | Avalanche | avalanche | AVAX | WAVAX | USDC | yes | yes | no | - |
 | 11155111 | Sepolia | sepolia | ETH | WETH | USDC | yes | yes | yes | 0 / 13 |
 
@@ -103,9 +103,10 @@ registry.networks["56"].usdc
 // → { "address": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d", "symbol": "USDC", "decimals": 18 }
 ```
 
-`wrappedNativeToken` and `usdc` are `null` where there is none (Celo has neither). `usdc` is the USDC Bulla uses
-on the network, native or bridged: its `symbol` says which (`USDC.e` on RedBelly). Don't assume 6 decimals: BNB
-Chain's USDC has 18. The native currency has no contract; Bulla uses the zero address for it.
+Every network has all three. Where the native currency is itself an ERC-20, `wrappedNativeToken` is that token
+(CELO on Celo). `usdc` is Circle's native USDC, or the official bridged one where there is none: its `symbol` says
+which (`USDC.e` on RedBelly). Don't assume 6 decimals: BNB Chain's USDC has 18. The native currency has no contract;
+Bulla uses the zero address for it.
 
 ### Look up a factoring pool or client
 

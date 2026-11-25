@@ -1,6 +1,6 @@
 {
   "$schema": "./registry.schema.json",
-  "generatedAt": "2026-11-25T18:42:40.148Z",
+  "generatedAt": "2026-11-25T19:56:32.432Z",
   "networks": {
     "1": {
       "name": "Ethereum Mainnet",
@@ -378,8 +378,16 @@
         "symbol": "CELO",
         "decimals": 18
       },
-      "wrappedNativeToken": null,
-      "usdc": null,
+      "wrappedNativeToken": {
+        "address": "0x471EcE3750Da237f93B8E339c536989b8978a438",
+        "symbol": "CELO",
+        "decimals": 18
+      },
+      "usdc": {
+        "address": "0xcebA9300f2b948710d2653dD7B07f33A8B32118C",
+        "symbol": "USDC",
+        "decimals": 6
+      },
       "contracts": {
         "bulla-contracts": {
           "bullaManager": "0x68da2c92b60337aA55BAcF0d7e61126eDb535752",

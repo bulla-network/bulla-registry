@@ -27,7 +27,7 @@ interface Pool {
 }
 
 interface RegistryLike {
-  networks: Record<string, { chainId: number; slug: string; wrappedNativeToken: Token | null; usdc: Token | null }>;
+  networks: Record<string, { chainId: number; slug: string; wrappedNativeToken: Token; usdc: Token }>;
   clients: Record<string, { logo?: string }>;
   pools: Pool[];
 }

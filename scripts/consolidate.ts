@@ -26,13 +26,14 @@ interface NetworkFacts {
   name: string;
   slug: string;
   nativeCurrency: { symbol: string; decimals: number };
-  wrappedNativeToken: Token | null;
-  usdc: Token | null;
+  wrappedNativeToken: Token;
+  usdc: Token;
 }
 
 // Every network the registry lists. A chain ID that a source exports but that isn't here fails the run:
 // add it with its name; its slug, the network's name in the subgraph (bulla-contracts-<slug>) and pools.json;
-// its native currency; and its wrapped native token and the USDC Bulla uses, or null where there is none.
+// its native currency; its wrapped native token (or the native currency's own ERC-20, where it has one); and its
+// USDC (Circle's native USDC, or the official bridged one where there is none).
 // Token symbols and decimals are what the contract returns (checked on-chain); addresses are checksummed.
 const NETWORKS: Record<string, NetworkFacts> = {
   "1": {
@@ -103,9 +104,9 @@ const NETWORKS: Record<string, NetworkFacts> = {
     name: "Celo",
     slug: "celo",
     nativeCurrency: { symbol: "CELO", decimals: 18 },
-    // CELO is itself an ERC-20 (0x471EcE3750Da237f93B8E339c536989b8978a438), so nothing wraps it.
-    wrappedNativeToken: null,
-    usdc: null,
+    // CELO is itself an ERC-20, so nothing wraps it: its own token stands in.
+    wrappedNativeToken: { address: "0x471EcE3750Da237f93B8E339c536989b8978a438", symbol: "CELO", decimals: 18 },
+    usdc: { address: "0xcebA9300f2b948710d2653dD7B07f33A8B32118C", symbol: "USDC", decimals: 6 },
   },
   "43114": {
     name: "Avalanche",
@@ -152,8 +153,8 @@ interface NetworkEntry {
   slug: string;
   subgraph: { dev: string; prod: string };
   nativeCurrency: NetworkFacts["nativeCurrency"];
-  wrappedNativeToken: Token | null;
-  usdc: Token | null;
+  wrappedNativeToken: Token;
+  usdc: Token;
   contracts: Record<string, Record<string, string>>;
 }
 
@@ -367,9 +368,8 @@ function buildNetworksTable(registry: Registry): string {
     const pools = registry.pools.filter((p) => p.chainId === network.chainId);
     const active = pools.filter((p) => p.category === "active").length;
     const poolCell = pools.length > 0 ? `${active} / ${pools.length}` : "-";
-    const wrapped = network.wrappedNativeToken?.symbol ?? "-";
-    const usdc = network.usdc?.symbol ?? "-";
-    lines.push(`| ${chainId} | ${network.name} | ${network.slug} | ${network.nativeCurrency.symbol} | ${wrapped} | ${usdc} | ${v1} | ${v2} | ${factoring} | ${poolCell} |`);
+    const { nativeCurrency, wrappedNativeToken, usdc } = network;
+    lines.push(`| ${chainId} | ${network.name} | ${network.slug} | ${nativeCurrency.symbol} | ${wrappedNativeToken.symbol} | ${usdc.symbol} | ${v1} | ${v2} | ${factoring} | ${poolCell} |`);
   }
 
   return lines.join("\n");
