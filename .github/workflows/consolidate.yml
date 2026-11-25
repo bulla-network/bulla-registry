@@ -5,6 +5,8 @@ name: Consolidate Registry
 # itself, and writes with a short-lived token from the bulla-registry-sync app. Neither app's key expires.
 # When what the package ships changed since the last release, it publishes @bulla/registry to npm with trusted
 # publishing (OIDC, no token): npmjs.com lists this workflow and the registry-sync environment as its publisher.
+# After a release it starts registry-bump.yml in each consumer (job notify-consumers), which moves that consumer
+# to the new version.
 on:
   workflow_dispatch:
     inputs:
@@ -28,6 +30,9 @@ jobs:
     environment: registry-sync
     permissions:
       id-token: write # npm trusted publishing, and its provenance
+    outputs:
+      release: ${{ steps.release.outputs.release }}
+      version: ${{ steps.release.outputs.version }}
 
     steps:
       - name: Triggered by
@@ -144,3 +149,55 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: gh api -X PUT "repos/${GITHUB_REPOSITORY}/actions/workflows/consolidate.yml/enable"
+
+  # Each consumer bumps itself: its registry-bump.yml moves @bulla/registry to the version just released, runs its
+  # checks and commits as releasebot-bulla. This job only starts it, with a token from bulla-registry-notify
+  # (Actions: write), scoped to that one consumer. It runs only after a release was published and tagged, so a run
+  # that publishes nothing starts nothing. A consumer without a registry-bump.yml on its default branch (GitHub
+  # dispatches only workflows it knows from there) gets a warning, not a failure: the release is already out.
+  # A failed dispatch fails only that consumer's job; re-run it to retry, a bump of the same version is a no-op.
+  notify-consumers:
+    needs: consolidate
+    if: needs.consolidate.outputs.release == 'true'
+    runs-on: ubuntu-latest
+    permissions: {}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - repo: bulla-cli
+            ref: main
+          - repo: bulla-backend
+            ref: dev
+          - repo: bulla-network
+            ref: dev
+    name: notify ${{ matrix.repo }}
+    steps:
+      - name: Mint a bulla-registry-notify token
+        id: notify-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.REGISTRY_NOTIFY_APP_ID }}
+          private-key: ${{ secrets.REGISTRY_NOTIFY_APP_PRIVATE_KEY }}
+          owner: bulla-network
+          repositories: ${{ matrix.repo }}
+          permission-actions: write
+
+      - name: Start registry-bump
+        env:
+          GH_TOKEN: ${{ steps.notify-token.outputs.token }}
+          REPO: bulla-network/${{ matrix.repo }}
+          REF: ${{ matrix.ref }}
+          VERSION: ${{ needs.consolidate.outputs.version }}
+        run: |
+          if out=$(gh api -X POST "repos/${REPO}/actions/workflows/registry-bump.yml/dispatches" \
+              -f ref="$REF" -f "inputs[version]=$VERSION" 2>&1); then
+            echo "Started registry-bump in ${REPO}@${REF} for @bulla/registry ${VERSION}" >> "$GITHUB_STEP_SUMMARY"
+          elif grep -q "HTTP 404" <<< "$out"; then
+            echo "::warning::${REPO} has no registry-bump.yml GitHub can dispatch on ${REF}; not bumped to ${VERSION}"
+            echo "Skipped ${REPO}: no registry-bump.yml" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "$out"
+            echo "::error::Could not start registry-bump in ${REPO}@${REF} for @bulla/registry ${VERSION}"
+            exit 1
+          fi
