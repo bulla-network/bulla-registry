@@ -43,13 +43,17 @@
 
     "network": {
       "type": "object",
+      "description": "wrappedNativeToken is the ERC-20 that wraps the native currency 1:1 (WETH on Ethereum), or the native currency's own ERC-20 where it is one (CELO on Celo). usdc is Circle's native USDC, or the official bridged USDC where there is none (its symbol says which, e.g. USDC.e).",
       "additionalProperties": false,
-      "required": ["name", "chainId", "slug", "subgraph", "contracts"],
+      "required": ["name", "chainId", "slug", "subgraph", "nativeCurrency", "wrappedNativeToken", "usdc", "contracts"],
       "properties": {
         "name": { "type": "string", "minLength": 1, "not": { "pattern": "^Unknown" } },
         "chainId": { "type": "integer", "minimum": 1 },
         "slug": { "$ref": "#/definitions/slug" },
         "subgraph": { "$ref": "#/definitions/subgraphEndpoints" },
+        "nativeCurrency": { "$ref": "#/definitions/nativeCurrency" },
+        "wrappedNativeToken": { "$ref": "#/definitions/token" },
+        "usdc": { "$ref": "#/definitions/token" },
         "contracts": {
           "type": "object",
           "description": "Keyed by source repo, then contract name.",
@@ -73,6 +77,28 @@
       "properties": {
         "dev": { "$ref": "#/definitions/url" },
         "prod": { "$ref": "#/definitions/url" }
+      }
+    },
+
+    "nativeCurrency": {
+      "type": "object",
+      "description": "The network's own currency, which pays for gas and has no contract (Bulla uses the zero address for it).",
+      "additionalProperties": false,
+      "required": ["symbol", "decimals"],
+      "properties": {
+        "symbol": { "type": "string", "minLength": 1 },
+        "decimals": { "type": "integer", "minimum": 0, "maximum": 36 }
+      }
+    },
+    "token": {
+      "type": "object",
+      "description": "An ERC-20 token. symbol and decimals are what the contract returns.",
+      "additionalProperties": false,
+      "required": ["address", "symbol", "decimals"],
+      "properties": {
+        "address": { "$ref": "#/definitions/address" },
+        "symbol": { "type": "string", "minLength": 1 },
+        "decimals": { "type": "integer", "minimum": 0, "maximum": 36 }
       }
     },
 

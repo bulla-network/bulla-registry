@@ -4,7 +4,7 @@ Central registry for Bulla protocol contract addresses, subgraph endpoints, fact
 
 ## Quick Start
 
-- **Contract addresses, subgraph endpoints, factoring pools & clients**: `registry.json` (shape: `registry.schema.json`)
+- **Contract addresses, subgraph endpoints, native currencies, wrapped native tokens, USDC, factoring pools & clients**: `registry.json` (shape: `registry.schema.json`)
 - **Skills** (agent instructions): `<repo>/skills/*.md`
 - **ABIs**: `<repo>/abis/*.json`
 - **TypeChain types**: `<repo>/typechain/*.ts`
@@ -54,20 +54,20 @@ factoring-contracts/             # Factoring contracts
 
 ## Networks
 
-| Chain ID | Name | Slug | V1 | V2 | Factoring | Pools (active / all) |
-|----------|------|------|----|----|-----------|----------------------|
-| 1 | Ethereum Mainnet | mainnet | yes | yes | no | 0 / 2 |
-| 10 | Optimism | optimism | yes | yes | no | - |
-| 50 | XDC | xdc | yes | yes | no | 0 / 1 |
-| 56 | BNB Chain | bnb_chain | yes | yes | no | - |
-| 100 | Gnosis Chain | gnosis | yes | yes | no | - |
-| 137 | Polygon | polygon | yes | yes | no | 0 / 2 |
-| 151 | RedBelly | redbelly | yes | no | yes | 0 / 1 |
-| 8453 | Base | base | yes | yes | yes | 0 / 2 |
-| 42161 | Arbitrum | arbitrum | yes | yes | yes | 2 / 5 |
-| 42220 | Celo | celo | yes | yes | no | - |
-| 43114 | Avalanche | avalanche | yes | yes | no | - |
-| 11155111 | Sepolia | sepolia | yes | yes | yes | 0 / 13 |
+| Chain ID | Name | Slug | Native | Wrapped | USDC | V1 | V2 | Factoring | Pools (active / all) |
+|----------|------|------|--------|---------|------|----|----|-----------|----------------------|
+| 1 | Ethereum Mainnet | mainnet | ETH | WETH | USDC | yes | yes | no | 0 / 2 |
+| 10 | Optimism | optimism | ETH | WETH | USDC | yes | yes | no | - |
+| 50 | XDC | xdc | XDC | WXDC | USDC | yes | yes | no | 0 / 1 |
+| 56 | BNB Chain | bnb_chain | BNB | WBNB | USDC | yes | yes | no | - |
+| 100 | Gnosis Chain | gnosis | XDAI | WXDAI | USDC | yes | yes | no | - |
+| 137 | Polygon | polygon | POL | WPOL | USDC | yes | yes | no | 0 / 2 |
+| 151 | RedBelly | redbelly | RBNT | WRBNT | USDC.e | yes | no | yes | 0 / 1 |
+| 8453 | Base | base | ETH | WETH | USDC | yes | yes | yes | 0 / 2 |
+| 42161 | Arbitrum | arbitrum | ETH | WETH | USDC | yes | yes | yes | 2 / 5 |
+| 42220 | Celo | celo | CELO | CELO | USDC | yes | yes | no | - |
+| 43114 | Avalanche | avalanche | AVAX | WAVAX | USDC | yes | yes | no | - |
+| 11155111 | Sepolia | sepolia | ETH | WETH | USDC | yes | yes | yes | 0 / 13 |
 
 ## How to Use
 
@@ -90,6 +90,23 @@ registry.networks["8453"].subgraph.prod
 
 The endpoints are constant: they change only when a network is added. Use `dev` in development and `prod` in
 production. Don't use the older `v2-main`/`latest` tags: they serve an outdated build.
+
+### Look up a network's native currency, wrapped native token or USDC
+
+```json
+// registry.json → networks[chainId].nativeCurrency, .wrappedNativeToken and .usdc
+registry.networks["137"].nativeCurrency
+// → { "symbol": "POL", "decimals": 18 }
+registry.networks["137"].wrappedNativeToken
+// → { "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270", "symbol": "WPOL", "decimals": 18 }
+registry.networks["56"].usdc
+// → { "address": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d", "symbol": "USDC", "decimals": 18 }
+```
+
+Every network has all three. Where the native currency is itself an ERC-20, `wrappedNativeToken` is that token
+(CELO on Celo). `usdc` is Circle's native USDC, or the official bridged one where there is none: its `symbol` says
+which (`USDC.e` on RedBelly). Don't assume 6 decimals: BNB Chain's USDC has 18. The native currency has no contract;
+Bulla uses the zero address for it.
 
 ### Look up a factoring pool or client
 

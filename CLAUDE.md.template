@@ -4,7 +4,7 @@ Central registry for Bulla protocol contract addresses, subgraph endpoints, fact
 
 ## Quick Start
 
-- **Contract addresses, subgraph endpoints, factoring pools & clients**: `registry.json` (shape: `registry.schema.json`)
+- **Contract addresses, subgraph endpoints, native currencies, wrapped native tokens, USDC, factoring pools & clients**: `registry.json` (shape: `registry.schema.json`)
 - **Skills** (agent instructions): `<repo>/skills/*.md`
 - **ABIs**: `<repo>/abis/*.json`
 - **TypeChain types**: `<repo>/typechain/*.ts`
@@ -41,6 +41,23 @@ registry.networks["8453"].subgraph.prod
 
 The endpoints are constant: they change only when a network is added. Use `dev` in development and `prod` in
 production. Don't use the older `v2-main`/`latest` tags: they serve an outdated build.
+
+### Look up a network's native currency, wrapped native token or USDC
+
+```json
+// registry.json → networks[chainId].nativeCurrency, .wrappedNativeToken and .usdc
+registry.networks["137"].nativeCurrency
+// → { "symbol": "POL", "decimals": 18 }
+registry.networks["137"].wrappedNativeToken
+// → { "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270", "symbol": "WPOL", "decimals": 18 }
+registry.networks["56"].usdc
+// → { "address": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d", "symbol": "USDC", "decimals": 18 }
+```
+
+Every network has all three. Where the native currency is itself an ERC-20, `wrappedNativeToken` is that token
+(CELO on Celo). `usdc` is Circle's native USDC, or the official bridged one where there is none: its `symbol` says
+which (`USDC.e` on RedBelly). Don't assume 6 decimals: BNB Chain's USDC has 18. The native currency has no contract;
+Bulla uses the zero address for it.
 
 ### Look up a factoring pool or client
 

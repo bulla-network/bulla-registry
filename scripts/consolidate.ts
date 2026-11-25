@@ -16,21 +16,113 @@ const GRAPHQL_SOURCE = "bulla-subgraph";
 const POOLS_SOURCE = "factoring-contracts";
 const POOLS_FILE = "pools.json";
 
+interface Token {
+  address: string;
+  symbol: string;
+  decimals: number;
+}
+
+interface NetworkFacts {
+  name: string;
+  slug: string;
+  nativeCurrency: { symbol: string; decimals: number };
+  wrappedNativeToken: Token;
+  usdc: Token;
+}
+
 // Every network the registry lists. A chain ID that a source exports but that isn't here fails the run:
-// add it with its name and its slug, the network's name in the subgraph (bulla-contracts-<slug>) and pools.json.
-const NETWORKS: Record<string, { name: string; slug: string }> = {
-  "1": { name: "Ethereum Mainnet", slug: "mainnet" },
-  "10": { name: "Optimism", slug: "optimism" },
-  "50": { name: "XDC", slug: "xdc" },
-  "56": { name: "BNB Chain", slug: "bnb_chain" },
-  "100": { name: "Gnosis Chain", slug: "gnosis" },
-  "137": { name: "Polygon", slug: "polygon" },
-  "151": { name: "RedBelly", slug: "redbelly" },
-  "8453": { name: "Base", slug: "base" },
-  "42161": { name: "Arbitrum", slug: "arbitrum" },
-  "42220": { name: "Celo", slug: "celo" },
-  "43114": { name: "Avalanche", slug: "avalanche" },
-  "11155111": { name: "Sepolia", slug: "sepolia" },
+// add it with its name; its slug, the network's name in the subgraph (bulla-contracts-<slug>) and pools.json;
+// its native currency; its wrapped native token (or the native currency's own ERC-20, where it has one); and its
+// USDC (Circle's native USDC, or the official bridged one where there is none).
+// Token symbols and decimals are what the contract returns (checked on-chain); addresses are checksummed.
+const NETWORKS: Record<string, NetworkFacts> = {
+  "1": {
+    name: "Ethereum Mainnet",
+    slug: "mainnet",
+    nativeCurrency: { symbol: "ETH", decimals: 18 },
+    wrappedNativeToken: { address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", symbol: "WETH", decimals: 18 },
+    usdc: { address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", symbol: "USDC", decimals: 6 },
+  },
+  "10": {
+    name: "Optimism",
+    slug: "optimism",
+    nativeCurrency: { symbol: "ETH", decimals: 18 },
+    wrappedNativeToken: { address: "0x4200000000000000000000000000000000000006", symbol: "WETH", decimals: 18 },
+    usdc: { address: "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85", symbol: "USDC", decimals: 6 },
+  },
+  "50": {
+    name: "XDC",
+    slug: "xdc",
+    nativeCurrency: { symbol: "XDC", decimals: 18 },
+    wrappedNativeToken: { address: "0x951857744785E80e2De051c32EE7b25f9c458C42", symbol: "WXDC", decimals: 18 },
+    usdc: { address: "0xfA2958CB79b0491CC627c1557F441eF849Ca8eb1", symbol: "USDC", decimals: 6 },
+  },
+  "56": {
+    name: "BNB Chain",
+    slug: "bnb_chain",
+    nativeCurrency: { symbol: "BNB", decimals: 18 },
+    wrappedNativeToken: { address: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", symbol: "WBNB", decimals: 18 },
+    // Binance-Peg USDC, which has 18 decimals.
+    usdc: { address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d", symbol: "USDC", decimals: 18 },
+  },
+  "100": {
+    name: "Gnosis Chain",
+    slug: "gnosis",
+    nativeCurrency: { symbol: "XDAI", decimals: 18 },
+    wrappedNativeToken: { address: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d", symbol: "WXDAI", decimals: 18 },
+    usdc: { address: "0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83", symbol: "USDC", decimals: 6 },
+  },
+  "137": {
+    name: "Polygon",
+    slug: "polygon",
+    nativeCurrency: { symbol: "POL", decimals: 18 },
+    wrappedNativeToken: { address: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270", symbol: "WPOL", decimals: 18 },
+    usdc: { address: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359", symbol: "USDC", decimals: 6 },
+  },
+  "151": {
+    name: "RedBelly",
+    slug: "redbelly",
+    nativeCurrency: { symbol: "RBNT", decimals: 18 },
+    wrappedNativeToken: { address: "0x6ed1F491e2d31536D6561f6bdB2AdC8F092a6076", symbol: "WRBNT", decimals: 18 },
+    usdc: { address: "0x8201c02d4AB2214471E8C3AD6475C8b0CD9F2D06", symbol: "USDC.e", decimals: 6 },
+  },
+  "8453": {
+    name: "Base",
+    slug: "base",
+    nativeCurrency: { symbol: "ETH", decimals: 18 },
+    wrappedNativeToken: { address: "0x4200000000000000000000000000000000000006", symbol: "WETH", decimals: 18 },
+    usdc: { address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", symbol: "USDC", decimals: 6 },
+  },
+  "42161": {
+    name: "Arbitrum",
+    slug: "arbitrum",
+    nativeCurrency: { symbol: "ETH", decimals: 18 },
+    wrappedNativeToken: { address: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", symbol: "WETH", decimals: 18 },
+    usdc: { address: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", symbol: "USDC", decimals: 6 },
+  },
+  "42220": {
+    name: "Celo",
+    slug: "celo",
+    nativeCurrency: { symbol: "CELO", decimals: 18 },
+    // CELO is itself an ERC-20, so nothing wraps it: its own token stands in.
+    wrappedNativeToken: { address: "0x471EcE3750Da237f93B8E339c536989b8978a438", symbol: "CELO", decimals: 18 },
+    usdc: { address: "0xcebA9300f2b948710d2653dD7B07f33A8B32118C", symbol: "USDC", decimals: 6 },
+  },
+  "43114": {
+    name: "Avalanche",
+    slug: "avalanche",
+    nativeCurrency: { symbol: "AVAX", decimals: 18 },
+    wrappedNativeToken: { address: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7", symbol: "WAVAX", decimals: 18 },
+    usdc: { address: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E", symbol: "USDC", decimals: 6 },
+  },
+  "11155111": {
+    name: "Sepolia",
+    slug: "sepolia",
+    nativeCurrency: { symbol: "ETH", decimals: 18 },
+    wrappedNativeToken: { address: "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9", symbol: "WETH", decimals: 18 },
+    // The test USDC Bulla's Sepolia pools use, not Circle's (0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238).
+    usdc: { address: "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8", symbol: "USDC", decimals: 6 },
+  },
 };
 
 // The subgraph's Goldsky project. Each network's endpoint is <base>/bulla-contracts-<slug>/<tag>/gn.
@@ -60,6 +152,9 @@ interface NetworkEntry {
   chainId: number;
   slug: string;
   subgraph: { dev: string; prod: string };
+  nativeCurrency: NetworkFacts["nativeCurrency"];
+  wrappedNativeToken: Token;
+  usdc: Token;
   contracts: Record<string, Record<string, string>>;
 }
 
@@ -88,12 +183,15 @@ function consolidate(): void {
   const errors: string[] = [];
   const networks: Record<string, NetworkEntry> = {};
 
-  for (const [chainId, { name, slug }] of Object.entries(NETWORKS)) {
+  for (const [chainId, { name, slug, nativeCurrency, wrappedNativeToken, usdc }] of Object.entries(NETWORKS)) {
     networks[chainId] = {
       name,
       chainId: Number(chainId),
       slug,
       subgraph: { dev: subgraphEndpoint(slug, "dev"), prod: subgraphEndpoint(slug, "prod") },
+      nativeCurrency,
+      wrappedNativeToken,
+      usdc,
       contracts: {},
     };
   }
@@ -260,8 +358,8 @@ function buildRegistryStructure(): string {
 
 function buildNetworksTable(registry: Registry): string {
   const lines: string[] = [];
-  lines.push("| Chain ID | Name | Slug | V1 | V2 | Factoring | Pools (active / all) |");
-  lines.push("|----------|------|------|----|----|-----------|----------------------|");
+  lines.push("| Chain ID | Name | Slug | Native | Wrapped | USDC | V1 | V2 | Factoring | Pools (active / all) |");
+  lines.push("|----------|------|------|--------|---------|------|----|----|-----------|----------------------|");
 
   for (const [chainId, network] of Object.entries(registry.networks)) {
     const v1 = network.contracts["bulla-contracts"] ? "yes" : "no";
@@ -270,7 +368,8 @@ function buildNetworksTable(registry: Registry): string {
     const pools = registry.pools.filter((p) => p.chainId === network.chainId);
     const active = pools.filter((p) => p.category === "active").length;
     const poolCell = pools.length > 0 ? `${active} / ${pools.length}` : "-";
-    lines.push(`| ${chainId} | ${network.name} | ${network.slug} | ${v1} | ${v2} | ${factoring} | ${poolCell} |`);
+    const { nativeCurrency, wrappedNativeToken, usdc } = network;
+    lines.push(`| ${chainId} | ${network.name} | ${network.slug} | ${nativeCurrency.symbol} | ${wrappedNativeToken.symbol} | ${usdc.symbol} | ${v1} | ${v2} | ${factoring} | ${poolCell} |`);
   }
 
   return lines.join("\n");
