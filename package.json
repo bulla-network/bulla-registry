@@ -1,6 +1,6 @@
 {
   "name": "@bulla/registry",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "Bulla protocol contract addresses, subgraph endpoints, factoring pools and clients, ABIs and client logos, with TypeScript types",
   "license": "MIT",
   "repository": {
