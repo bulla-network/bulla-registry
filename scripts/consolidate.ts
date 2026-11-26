@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync, existsSync, readdirSync } from "fs";
 import { join, dirname, basename } from "path";
 import { fileURLToPath } from "url";
 import { validateRegistry } from "./validate-registry.ts";
+import { publishedPools } from "./published-pools.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -253,7 +254,8 @@ function consolidate(): void {
     generatedAt: new Date().toISOString(),
     networks,
     clients,
-    pools: poolsFile.pools,
+    // Deprecated pools are a record in factoring-contracts only (see published-pools.ts)
+    pools: publishedPools(poolsFile.pools),
   };
 
   // Check the shape before writing, so a broken consolidation never reaches a commit.
