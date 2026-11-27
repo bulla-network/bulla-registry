@@ -67,7 +67,7 @@ factoring-contracts/             # Factoring contracts
 | 42161 | Arbitrum | arbitrum | ETH | WETH | USDC | yes | yes | yes | 2 / 5 |
 | 42220 | Celo | celo | CELO | CELO | USDC | yes | yes | no | - |
 | 43114 | Avalanche | avalanche | AVAX | WAVAX | USDC | yes | yes | no | - |
-| 11155111 | Sepolia | sepolia | ETH | WETH | USDC | yes | yes | yes | 0 / 13 |
+| 11155111 | Sepolia | sepolia | ETH | WETH | USDC | yes | yes | yes | 0 / 8 |
 
 ## How to Use
 

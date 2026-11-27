@@ -1,6 +1,6 @@
 {
   "$schema": "./registry.schema.json",
-  "generatedAt": "2026-11-25T20:26:29.172Z",
+  "generatedAt": "2026-11-27T14:31:50.615Z",
   "networks": {
     "1": {
       "name": "Ethereum Mainnet",
@@ -488,8 +488,7 @@
           "frendLendV2": "0x4d6A66D32CF34270e4cc9C9F201CA4dB650Be3f2"
         },
         "factoring-contracts": {
-          "bullaFactoringV2_1_TCS": "0xa5e94f122d421c9579a5cb1e687f55e109ba270b",
-          "bullaFactoringV2_2_FUNDORA": "0x262d36FA1740DBeEC72a88d69b6e1E4888dF41FF"
+          "bullaFactoringV2_1_TCS": "0xa5e94f122d421c9579a5cb1e687f55e109ba270b"
         }
       }
     }
@@ -516,79 +515,6 @@
     }
   },
   "pools": [
-    {
-      "chainId": 11155111,
-      "network": "sepolia",
-      "address": "0xbc1dd527c3CF1302Cb189CaB9683Ef5CF27F0308",
-      "version": "V2_1",
-      "client": "tcs",
-      "poolKey": "tcs",
-      "displayName": "Bulla TCS Factoring Pool Sepolia Test v2.1",
-      "category": "hidden",
-      "shareToken": {
-        "symbol": "BFT-TCS",
-        "name": "Bulla TCS Factoring Pool",
-        "decimals": 6
-      },
-      "asset": {
-        "address": "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8",
-        "symbol": "USDC",
-        "name": "USDC",
-        "decimals": 6,
-        "kind": "stable"
-      },
-      "insured": false,
-      "enforceKyc": false,
-      "permissions": {
-        "factoring": "0x996e2beFD170CeB741b0072AE97E524Bdf410E9e",
-        "deposit": "0xB39bF6Fcd9bd97F7616FAD7b6118Fc2E911eA1d8",
-        "redeem": "0xB39bF6Fcd9bd97F7616FAD7b6118Fc2E911eA1d8"
-      },
-      "underwriter": "0x5d72984B2e1170EAA0DA4BC22B25C87729C5EBB3",
-      "fees": {
-        "protocolBps": 25,
-        "adminBps": 50,
-        "targetYieldBps": 730
-      },
-      "deployBlock": 9454274
-    },
-    {
-      "chainId": 11155111,
-      "network": "sepolia",
-      "address": "0x8ce8Fe0C4aDf44469f138A8389bDA91cC721A515",
-      "version": "V2_2",
-      "client": "fundora",
-      "poolKey": "fundora",
-      "displayName": "Test Pool V2.2",
-      "category": "hidden",
-      "shareToken": {
-        "symbol": "BFT-V2_1",
-        "name": "Test Token V2.1",
-        "decimals": 6
-      },
-      "asset": {
-        "address": "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8",
-        "symbol": "USDC",
-        "name": "USDC",
-        "decimals": 6,
-        "kind": "stable"
-      },
-      "insured": false,
-      "enforceKyc": false,
-      "permissions": {
-        "factoring": "0x4CAa16f952F8502f1ee314dDcb83afA11e1D3734",
-        "deposit": "0x62919a63ad1E3176C5b178A072ff2b04cd8A748A",
-        "redeem": "0x764E845528e177aF40D508F46E948d5440AaC13D"
-      },
-      "underwriter": "0x5d72984B2e1170EAA0DA4BC22B25C87729C5EBB3",
-      "fees": {
-        "protocolBps": 30,
-        "adminBps": 50,
-        "targetYieldBps": 900,
-        "insuranceBps": 100
-      },
-      "deployBlock": 10721735
-    },
     {
       "chainId": 11155111,
       "network": "sepolia",
@@ -876,112 +802,6 @@
         "targetYieldBps": 1100
       },
       "deployBlock": 6813150
-    },
-    {
-      "chainId": 11155111,
-      "network": "sepolia",
-      "address": "0x262d36FA1740DBeEC72a88d69b6e1E4888dF41FF",
-      "version": "V2_2",
-      "client": "fundora",
-      "displayName": "Test Pool V2.2",
-      "category": "hidden",
-      "shareToken": {
-        "symbol": "BFT-V2_1",
-        "name": "Test Token V2.1",
-        "decimals": 6
-      },
-      "asset": {
-        "address": "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8",
-        "symbol": "USDC",
-        "name": "USDC",
-        "decimals": 6,
-        "kind": "stable"
-      },
-      "insured": false,
-      "enforceKyc": false,
-      "permissions": {
-        "factoring": "0x523e35a7A0c2f2e48E32bb6363090BB436Ac433F",
-        "deposit": "0x764E845528e177aF40D508F46E948d5440AaC13D",
-        "redeem": "0x764E845528e177aF40D508F46E948d5440AaC13D"
-      },
-      "underwriter": "0x5d72984B2e1170EAA0DA4BC22B25C87729C5EBB3",
-      "fees": {
-        "protocolBps": 30,
-        "adminBps": 50,
-        "targetYieldBps": 900,
-        "insuranceBps": 100
-      },
-      "deployBlock": 10708958
-    },
-    {
-      "chainId": 11155111,
-      "network": "sepolia",
-      "address": "0xd4116f515A6958da851080B390DDE4B81f408978",
-      "version": "V2_1",
-      "client": "fundora",
-      "displayName": "Fundora Management Pool V2.1",
-      "category": "hidden",
-      "shareToken": {
-        "symbol": "FACT-V2_1",
-        "name": "Fundora Management Token V2.1",
-        "decimals": 18
-      },
-      "asset": {
-        "address": "0x3894374b3ffd1DB45b760dD094963Dd1167e5568",
-        "symbol": "WYST",
-        "name": "WYST",
-        "decimals": 18,
-        "kind": "stable"
-      },
-      "insured": false,
-      "enforceKyc": false,
-      "permissions": {
-        "factoring": "0x523e35a7A0c2f2e48E32bb6363090BB436Ac433F",
-        "deposit": "0x764E845528e177aF40D508F46E948d5440AaC13D",
-        "redeem": "0x764E845528e177aF40D508F46E948d5440AaC13D"
-      },
-      "underwriter": "0x5d72984B2e1170EAA0DA4BC22B25C87729C5EBB3",
-      "fees": {
-        "protocolBps": 10,
-        "adminBps": 50,
-        "targetYieldBps": 900
-      },
-      "deployBlock": 9475592
-    },
-    {
-      "chainId": 11155111,
-      "network": "sepolia",
-      "address": "0x1E1d535a41515D3D2c29C1524C825236D67733E1",
-      "version": "V2_1",
-      "client": "fundora",
-      "displayName": "Fundora Management Pool V2.1",
-      "category": "hidden",
-      "shareToken": {
-        "symbol": "FACT-V2_1",
-        "name": "Fundora Management Token V2.1",
-        "decimals": 18
-      },
-      "asset": {
-        "address": "0x3894374b3ffd1DB45b760dD094963Dd1167e5568",
-        "symbol": "WYST",
-        "name": "WYST",
-        "decimals": 18,
-        "kind": "stable"
-      },
-      "insured": false,
-      "enforceKyc": false,
-      "permissions": {
-        "factoring": "0x523e35a7A0c2f2e48E32bb6363090BB436Ac433F",
-        "deposit": "0x764E845528e177aF40D508F46E948d5440AaC13D",
-        "redeem": "0x764E845528e177aF40D508F46E948d5440AaC13D"
-      },
-      "underwriter": "0x5d72984B2e1170EAA0DA4BC22B25C87729C5EBB3",
-      "fees": {
-        "protocolBps": 10,
-        "adminBps": 50,
-        "targetYieldBps": 900
-      },
-      "deployBlock": 9608136
     },
     {
       "chainId": 137,
