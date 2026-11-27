@@ -64,7 +64,7 @@ A chain ID a source exports must be listed in `NETWORKS` in `scripts/consolidate
 
 ### Changing the shape
 
-Edit `registry.schema.json` and `scripts/consolidate.ts` together. The pool and client definitions copy factoring-contracts' `pools.schema.json` on purpose: a change there fails consolidation here until this schema is updated to match, so every change to the published shape is reviewed in this repo.
+Edit `registry.schema.json` and `scripts/consolidate.ts` together. Pools whose category in `pools.json` is `deprecated` (a record of a pool no consumer can read, e.g. a pre-release test deploy) are left out of `registry.json` (`scripts/published-pools.ts`), so `registry.schema.json` has no `deprecated` category. The pool and client definitions copy factoring-contracts' `pools.schema.json` on purpose: a change there fails consolidation here until this schema is updated to match, so every change to the published shape is reviewed in this repo.
 
 `bulla-contracts` (V1) is archived, so it is no longer pulled: its last export is committed in `bulla-contracts/` and still included in `registry.json`.
 
